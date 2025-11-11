@@ -45,30 +45,15 @@
   padding: 0;
 }
 
-html, body {
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-}
-
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
   background: var(--color-bg-primary);
   color: var(--color-text-secondary);
   font-size: var(--font-size-base);
   line-height: 1.5;
+  min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  display: flex;
-  flex-direction: column;
-}
-
-/* ========== 頁面容器 ========== */
-.page-wrapper {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
 }
 
 /* ========== 頭部 ========== */
@@ -81,8 +66,9 @@ body {
   border-bottom: 1px solid var(--color-border);
   position: sticky;
   top: 0;
-  z-index: 50;
-  flex-shrink: 0;
+  z-index: 100;
+  backdrop-filter: blur(10px);
+  background: rgba(36, 36, 36, 0.95);
 }
 
 .header-left {
@@ -108,7 +94,6 @@ body {
 .search-container {
   padding: var(--spacing-lg);
   background: var(--color-bg-secondary);
-  flex-shrink: 0;
 }
 
 .search-box {
@@ -140,7 +125,6 @@ body {
   border-bottom: 1px solid var(--color-border);
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
-  flex-shrink: 0;
 }
 
 .tabs-container::-webkit-scrollbar {
@@ -175,10 +159,9 @@ body {
 
 /* ========== 主內容區域（綠色區域）========== */
 .content {
-  flex: 1;
   padding: var(--spacing-md) var(--spacing-lg);
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
+  padding-bottom: 100px;
+  min-height: calc(100vh - 200px);
 }
 
 /* ========== 工具卡片 ========== */
@@ -238,7 +221,7 @@ body {
   flex-shrink: 0;
 }
 
-/* ========== 底部抽屜（紅色區域）- 全螢幕極限 ========== */
+/* ========== 底部抽屜（紅色區域）========== */
 .bottom-sheet-overlay {
   position: fixed;
   top: 0;
@@ -248,7 +231,7 @@ body {
   background: rgba(0, 0, 0, 0.5);
   z-index: 999;
   opacity: 0;
-  transition: opacity 0.3s ease-out;
+  transition: opacity 0.3s;
   pointer-events: none;
 }
 
@@ -259,27 +242,23 @@ body {
 
 .bottom-sheet {
   position: fixed;
-  top: 0;
   left: 0;
   right: 0;
   bottom: 0;
   background: var(--color-bg-primary);
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
   z-index: 1000;
-  width: 100%;
-  height: 100%;
+  max-height: 90vh;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   transform: translateY(100%);
-  transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  touch-action: none;
 }
 
 .bottom-sheet.active {
   transform: translateY(0);
-}
-
-.bottom-sheet.closing {
-  transition: transform 0.3s ease-in;
-  transform: translateY(100%);
 }
 
 .bottom-sheet-handle {
@@ -289,11 +268,6 @@ body {
   border-radius: 2px;
   margin: var(--spacing-lg) auto;
   cursor: grab;
-  touch-action: none;
-}
-
-.bottom-sheet-handle:active {
-  cursor: grabbing;
 }
 
 .bottom-sheet-header {
@@ -311,21 +285,17 @@ body {
   font-weight: 600;
 }
 
-.bottom-sheet-hint {
+.bottom-sheet-close {
+  font-size: var(--font-size-xl);
+  cursor: pointer;
   color: var(--color-text-tertiary);
-  font-size: var(--font-size-xs);
-  text-align: center;
-  padding: var(--spacing-sm) 0;
-  margin-top: var(--spacing-sm);
 }
 
 .bottom-sheet-content {
   flex: 1;
   overflow-y: auto;
-  overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
   padding: var(--spacing-lg);
-  width: 100%;
+  -webkit-overflow-scrolling: touch;
 }
 
 .bottom-sheet-content iframe {
@@ -335,7 +305,7 @@ body {
   border-radius: var(--radius-md);
 }
 
-/* ========== 底部導航（黃色區域）- 獨立分開 ========== */
+/* ========== 底部導航（黃色區域）========== */
 .bottom-nav {
   position: fixed;
   bottom: 0;
@@ -347,7 +317,7 @@ body {
   justify-content: space-around;
   padding: var(--spacing-sm) 0;
   z-index: 100;
-  flex-shrink: 0;
+  backdrop-filter: blur(10px);
 }
 
 .nav-item {
@@ -422,6 +392,18 @@ body {
   display: block;
 }
 
+/* ========== 動畫 ========== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* iOS 優化 */
 @supports (-webkit-touch-callout: none) {
   body {
@@ -432,72 +414,69 @@ body {
 </head>
 <body>
 
-<!-- 頁面容器 -->
-<div class="page-wrapper">
+<!-- 頭部 -->
+<div class="header">
+  <div class="header-left" onclick="goBack()">返回</div>
+  <div class="header-center">整合工具</div>
+  <div class="header-right" onclick="toggleMenu()">☰</div>
+</div>
+
+<!-- 搜索欄 -->
+<div class="search-container">
+  <div class="search-box">
+    <div style="font-size: 18px;">🔍</div>
+    <input type="text" class="search-input" placeholder="搜尋工具" id="searchInput" oninput="handleSearch()">
+  </div>
+</div>
+
+<!-- 分類標籤（藍色區域）- 主導航 -->
+<div class="tabs-container">
+  <div class="tabs" id="mainTabs">
+    <div class="tab active" onclick="switchMainTab('integrate')">整合</div>
+    <div class="tab" onclick="switchMainTab('tattoo')">刺青</div>
+    <div class="tab" onclick="switchMainTab('energy')">能量</div>
+    <div class="tab" onclick="switchMainTab('record')">紀錄</div>
+  </div>
+</div>
+
+<!-- 主內容區域（綠色區域） -->
+<div class="content" id="mainContent">
   
-  <!-- 頭部 -->
-  <div class="header">
-    <div class="header-left" onclick="goBack()">返回</div>
-    <div class="header-center">整合工具</div>
-    <div class="header-right" onclick="toggleMenu()">☰</div>
+  <!-- 整合分類 -->
+  <div id="integratePage" class="page-section active">
+    <div id="integrateGrid"></div>
   </div>
 
-  <!-- 搜索欄 -->
-  <div class="search-container">
-    <div class="search-box">
-      <div style="font-size: 18px;">🔍</div>
-      <input type="text" class="search-input" placeholder="搜尋工具" id="searchInput" oninput="handleSearch()">
-    </div>
+  <!-- 刺青分類 -->
+  <div id="tattooPage" class="page-section">
+    <!-- 刺青內部標籤 -->
+    <div class="category-tabs" id="tattooTabs"></div>
+    <!-- 刺青內容 -->
+    <div id="tattooContent"></div>
   </div>
 
-  <!-- 分類標籤（藍色區域）- 主導航 -->
-  <div class="tabs-container">
-    <div class="tabs" id="mainTabs">
-      <div class="tab active" onclick="switchMainTab('integrate')">整合</div>
-      <div class="tab" onclick="switchMainTab('tattoo')">刺青</div>
-      <div class="tab" onclick="switchMainTab('energy')">能量</div>
-      <div class="tab" onclick="switchMainTab('record')">紀錄</div>
-    </div>
+  <!-- 能量分類 -->
+  <div id="energyPage" class="page-section">
+    <!-- 能量內部標籤 -->
+    <div class="category-tabs" id="energyTabs"></div>
+    <!-- 能量內容 -->
+    <div id="energyContent"></div>
   </div>
 
-  <!-- 主內容區域（綠色區域） -->
-  <div class="content" id="mainContent">
-    
-    <!-- 整合分類 -->
-    <div id="integratePage" class="page-section active">
-      <div id="integrateGrid"></div>
-    </div>
-
-    <!-- 刺青分類 -->
-    <div id="tattooPage" class="page-section">
-      <div class="category-tabs" id="tattooTabs"></div>
-      <div id="tattooContent"></div>
-    </div>
-
-    <!-- 能量分類 -->
-    <div id="energyPage" class="page-section">
-      <div class="category-tabs" id="energyTabs"></div>
-      <div id="energyContent"></div>
-    </div>
-
-    <!-- 紀錄分類 -->
-    <div id="recordPage" class="page-section">
-      <div id="recordContent"></div>
-    </div>
-
+  <!-- 紀錄分類 -->
+  <div id="recordPage" class="page-section">
+    <div id="recordContent"></div>
   </div>
 
 </div>
 
-<!-- 底部抽屜（紅色區域）- 全螢幕極限 -->
-<div class="bottom-sheet-overlay" id="bottomSheetOverlay"></div>
+<!-- 底部抽屜（紅色區域）- 完整高度顯示 -->
+<div class="bottom-sheet-overlay" id="bottomSheetOverlay" onclick="closeBottomSheet()"></div>
 <div class="bottom-sheet" id="bottomSheet">
-  <div class="bottom-sheet-handle" id="dragHandle"></div>
+  <div class="bottom-sheet-handle"></div>
   <div class="bottom-sheet-header">
-    <div>
-      <div class="bottom-sheet-title" id="sheetTitle">工具</div>
-      <div class="bottom-sheet-hint">向下滑關閉</div>
-    </div>
+    <div class="bottom-sheet-title" id="sheetTitle">工具</div>
+    <div class="bottom-sheet-close" onclick="closeBottomSheet()">✕</div>
   </div>
   <div class="bottom-sheet-content" id="sheetContent"></div>
 </div>
@@ -643,6 +622,8 @@ let energyCategories = [];
 let currentMainTab = 'integrate';
 let currentTattooTab = '';
 let currentEnergyTab = '';
+let sheetStartY = 0;
+let sheetCurrentY = 0;
 
 // ============ 初始化 ============
 function initApp() {
@@ -654,14 +635,17 @@ function initApp() {
 }
 
 function loadAllData() {
+  // 加載整合工具
   const toolsData = localStorage.getItem(STORAGE_KEYS.TOOLS_LIST);
   allTools = toolsData ? JSON.parse(toolsData) : DEFAULT_TOOLS;
   if (!toolsData) localStorage.setItem(STORAGE_KEYS.TOOLS_LIST, JSON.stringify(allTools));
 
+  // 加載刺青分類
   const tattooData = localStorage.getItem(STORAGE_KEYS.TATTOO_CATEGORIES);
   tattooCategories = tattooData ? JSON.parse(tattooData) : DEFAULT_TATTOO_CATEGORIES;
   if (!tattooData) localStorage.setItem(STORAGE_KEYS.TATTOO_CATEGORIES, JSON.stringify(tattooCategories));
 
+  // 加載能量分類
   const energyData = localStorage.getItem(STORAGE_KEYS.ENERGY_CATEGORIES);
   energyCategories = energyData ? JSON.parse(energyData) : DEFAULT_ENERGY_CATEGORIES;
   if (!energyData) localStorage.setItem(STORAGE_KEYS.ENERGY_CATEGORIES, JSON.stringify(energyCategories));
@@ -708,6 +692,7 @@ function renderTattooCategories() {
   contentContainer.innerHTML = '';
 
   tattooCategories.forEach((category, index) => {
+    // 創建標籤
     const tab = document.createElement('div');
     tab.className = `category-tab ${index === 0 ? 'active' : ''}`;
     tab.textContent = category.name;
@@ -715,6 +700,7 @@ function renderTattooCategories() {
     tabsContainer.appendChild(tab);
   });
 
+  // 初始化第一個分類
   if (tattooCategories.length > 0) {
     currentTattooTab = tattooCategories[0].id;
     renderTattooTabContent(currentTattooTab);
@@ -756,7 +742,6 @@ function renderTattooTabContent(categoryId) {
     const itemCard = document.createElement('div');
     itemCard.className = 'tool-card';
     itemCard.style.marginBottom = 'var(--spacing-sm)';
-    itemCard.onclick = () => openTool({title: item.title, url: item.url});
 
     itemCard.innerHTML = `
       <div style="flex: 1;">
@@ -764,8 +749,8 @@ function renderTattooTabContent(categoryId) {
         <div class="tool-description">${item.url || '無連結'}</div>
       </div>
       <div style="display: flex; gap: 8px;">
-        <button onclick="event.stopPropagation(); editTattooItem('${categoryId}', '${item.id}')" style="background: none; border: none; color: var(--color-text-tertiary); cursor: pointer; font-size: 18px;">✏️</button>
-        <button onclick="event.stopPropagation(); deleteTattooItem('${categoryId}', '${item.id}')" style="background: none; border: none; color: #ff6b6b; cursor: pointer; font-size: 18px;">🗑️</button>
+        <button onclick="editTattooItem('${categoryId}', '${item.id}')" style="background: none; border: none; color: var(--color-text-tertiary); cursor: pointer; font-size: 18px;">✏️</button>
+        <button onclick="deleteTattooItem('${categoryId}', '${item.id}')" style="background: none; border: none; color: #ff6b6b; cursor: pointer; font-size: 18px;">🗑️</button>
       </div>
     `;
 
@@ -805,10 +790,10 @@ function editTattooItem(categoryId, itemId) {
   
   if (item) {
     const newTitle = prompt('編輯名稱:', item.title);
-    if (newTitle !== null) item.title = newTitle;
+    if (newTitle) item.title = newTitle;
     
     const newUrl = prompt('編輯連結:', item.url);
-    if (newUrl !== null) item.url = newUrl;
+    if (newUrl) item.url = newUrl;
     
     saveAllData();
     renderTattooTabContent(categoryId);
@@ -883,7 +868,6 @@ function renderEnergyTabContent(categoryId) {
     const itemCard = document.createElement('div');
     itemCard.className = 'tool-card';
     itemCard.style.marginBottom = 'var(--spacing-sm)';
-    itemCard.onclick = () => openTool({title: item.title, url: item.url});
 
     itemCard.innerHTML = `
       <div style="flex: 1;">
@@ -891,8 +875,8 @@ function renderEnergyTabContent(categoryId) {
         <div class="tool-description">${item.url || '無連結'}</div>
       </div>
       <div style="display: flex; gap: 8px;">
-        <button onclick="event.stopPropagation(); editEnergyItem('${categoryId}', '${item.id}')" style="background: none; border: none; color: var(--color-text-tertiary); cursor: pointer; font-size: 18px;">✏️</button>
-        <button onclick="event.stopPropagation(); deleteEnergyItem('${categoryId}', '${item.id}')" style="background: none; border: none; color: #ff6b6b; cursor: pointer; font-size: 18px;">🗑️</button>
+        <button onclick="editEnergyItem('${categoryId}', '${item.id}')" style="background: none; border: none; color: var(--color-text-tertiary); cursor: pointer; font-size: 18px;">✏️</button>
+        <button onclick="deleteEnergyItem('${categoryId}', '${item.id}')" style="background: none; border: none; color: #ff6b6b; cursor: pointer; font-size: 18px;">🗑️</button>
       </div>
     `;
 
@@ -932,10 +916,10 @@ function editEnergyItem(categoryId, itemId) {
   
   if (item) {
     const newTitle = prompt('編輯名稱:', item.title);
-    if (newTitle !== null) item.title = newTitle;
+    if (newTitle) item.title = newTitle;
     
     const newUrl = prompt('編輯連結:', item.url);
-    if (newUrl !== null) item.url = newUrl;
+    if (newUrl) item.url = newUrl;
     
     saveAllData();
     renderEnergyTabContent(categoryId);
@@ -969,59 +953,39 @@ function openBottomSheet(title, content) {
   document.getElementById('sheetContent').innerHTML = content;
   document.getElementById('bottomSheet').classList.add('active');
   document.getElementById('bottomSheetOverlay').classList.add('active');
-  document.body.style.overflow = 'hidden';
 }
 
 function closeBottomSheet() {
-  const sheet = document.getElementById('bottomSheet');
-  sheet.classList.remove('active');
-  sheet.classList.add('closing');
+  document.getElementById('bottomSheet').classList.remove('active');
   document.getElementById('bottomSheetOverlay').classList.remove('active');
-  document.body.style.overflow = 'auto';
-  
-  setTimeout(() => {
-    sheet.classList.remove('closing');
-  }, 300);
 }
 
 function setupBottomSheetGestures() {
   const sheet = document.getElementById('bottomSheet');
-  const handle = document.getElementById('dragHandle');
+  const handle = document.querySelector('.bottom-sheet-handle');
   
   if (!handle) return;
 
-  let startY = 0;
-  let currentY = 0;
-
   handle.addEventListener('touchstart', (e) => {
-    startY = e.touches[0].clientY;
-    currentY = 0;
-    sheet.style.transition = 'none';
-  }, false);
+    sheetStartY = e.touches[0].clientY;
+  });
 
   handle.addEventListener('touchmove', (e) => {
-    currentY = e.touches[0].clientY - startY;
-    
-    if (currentY > 0) {
-      sheet.style.transform = `translateY(${currentY}px)`;
+    sheetCurrentY = e.touches[0].clientY - sheetStartY;
+    if (sheetCurrentY > 0) {
+      sheet.style.transform = `translateY(${sheetCurrentY}px)`;
     }
-  }, false);
+  });
 
   handle.addEventListener('touchend', () => {
-    sheet.style.transition = 'transform 0.3s ease-out';
-    
-    // ✅ 改成 10px - 最容易關閉
-    if (currentY > 10) {
+    if (sheetCurrentY > 100) {
       closeBottomSheet();
     } else {
       sheet.style.transform = 'translateY(0)';
     }
-    
-    startY = 0;
-    currentY = 0;
-  }, false);
-
-  document.getElementById('bottomSheetOverlay').addEventListener('click', closeBottomSheet);
+    sheetStartY = 0;
+    sheetCurrentY = 0;
+  });
 }
 
 // ============ 頁面切換 ============
@@ -1029,26 +993,19 @@ function switchMainTab(tabName) {
   currentMainTab = tabName;
   localStorage.setItem(STORAGE_KEYS.CURRENT_MAIN_TAB, tabName);
 
+  // 更新標籤樣式
   document.querySelectorAll('.tabs .tab').forEach(tab => {
     tab.classList.remove('active');
   });
-  document.querySelectorAll('.tabs .tab').forEach(tab => {
-    if ((tabName === 'integrate' && tab.textContent === '整合') ||
-        (tabName === 'tattoo' && tab.textContent === '刺青') ||
-        (tabName === 'energy' && tab.textContent === '能量') ||
-        (tabName === 'record' && tab.textContent === '紀錄')) {
-      tab.classList.add('active');
-    }
-  });
+  event.target.classList.add('active');
 
+  // 更新導航樣式
   document.querySelectorAll('.nav-item').forEach(item => {
     item.classList.remove('active');
   });
-  const navIndex = ['integrate', 'tattoo', 'energy', 'record'].indexOf(tabName);
-  if (navIndex >= 0) {
-    document.querySelectorAll('.nav-item')[navIndex].classList.add('active');
-  }
+  event.currentTarget?.closest('.nav-item').classList.add('active');
 
+  // 顯示對應頁面
   document.querySelectorAll('.page-section').forEach(page => {
     page.classList.remove('active');
   });
@@ -1056,15 +1013,19 @@ function switchMainTab(tabName) {
   switch(tabName) {
     case 'integrate':
       document.getElementById('integratePage').classList.add('active');
+      document.querySelectorAll('.nav-item')[0].classList.add('active');
       break;
     case 'tattoo':
       document.getElementById('tattooPage').classList.add('active');
+      document.querySelectorAll('.nav-item')[1].classList.add('active');
       break;
     case 'energy':
       document.getElementById('energyPage').classList.add('active');
+      document.querySelectorAll('.nav-item')[2].classList.add('active');
       break;
     case 'record':
       document.getElementById('recordPage').classList.add('active');
+      document.querySelectorAll('.nav-item')[3].classList.add('active');
       break;
   }
 }
