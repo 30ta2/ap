@@ -6,13 +6,10 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="整合工具">
-<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%231a1a1a' width='192' height='192'/><text x='96' y='130' font-size='80' text-anchor='middle' fill='%234CAF50'>🔧</text></svg>">
-<link rel="manifest" href="data:application/json;charset=utf-8,%7B%22name%22%3A%22%E6%95%B4%E5%90%88%E5%B7%A5%E5%85%B7%22%2C%22short_name%22%3A%22%E5%B7%A5%E5%85%B7%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22theme_color%22%3A%22%231a1a1a%22%2C%22background_color%22%3A%22%231a1a1a%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%3Csvg xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg' viewBox%3D'0 0 192 192'%3E%3Crect fill%3D'%25231a1a1a' width%3D'192' height%3D'192'%2F%3E%3Ctext x%3D'96' y%3D'130' font-size%3D'80' text-anchor%3D'middle' fill%3D'%25234CAF50'%3E%F0%9F%94%A7%3C%2Ftext%3E%3C%2Fsvg%3E%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%7D%5D%7D">
 <title>整合工具</title>
 <style>
 /* CSS 設計系統 */
 :root {
-  /* 顏色系統 - 基於深色主題 */
   --color-bg-primary: #1a1a1a;
   --color-bg-secondary: #242424;
   --color-bg-tertiary: #2a2a2a;
@@ -23,51 +20,35 @@
   --color-text-secondary: #b0b0b0;
   --color-text-tertiary: #808080;
   
-  /* 分類顏色 */
-  --color-integrate: #FF8A80;
-  --color-tattoo: #82B1FF;
-  --color-energy: #FFD54F;
-  --color-record: #69F0AE;
-  
-  /* 間距系統 */
   --spacing-xs: 4px;
-  --spacing-sm: 8px;
-  --spacing-md: 12px;
-  --spacing-lg: 16px;
-  --spacing-xl: 24px;
-  --spacing-2xl: 32px;
+  --spacing-sm: 6px;
+  --spacing-md: 10px;
+  --spacing-lg: 12px;
+  --spacing-xl: 16px;
+  --spacing-2xl: 20px;
   
-  /* 字體系統 */
-  --font-size-xs: 12px;
-  --font-size-sm: 14px;
-  --font-size-base: 16px;
-  --font-size-md: 18px;
-  --font-size-lg: 20px;
-  --font-size-xl: 24px;
+  --font-size-xs: 11px;
+  --font-size-sm: 13px;
+  --font-size-base: 15px;
+  --font-size-md: 17px;
+  --font-size-lg: 19px;
   
-  /* 圓角系統 */
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 20px;
-  --radius-full: 50%;
-  
-  /* 陰影系統 */
-  --shadow-sm: 0 2px 4px rgba(0,0,0,0.2);
-  --shadow-md: 0 4px 8px rgba(0,0,0,0.3);
-  --shadow-lg: 0 8px 16px rgba(0,0,0,0.4);
-  
-  /* 過渡效果 */
-  --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-base: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 16px;
 }
 
-/* 全局樣式 */
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 }
 
 body {
@@ -76,13 +57,21 @@ body {
   color: var(--color-text-secondary);
   font-size: var(--font-size-base);
   line-height: 1.5;
-  min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  padding-bottom: 80px;
+  display: flex;
+  flex-direction: column;
 }
 
-/* 頭部區域 */
+/* ========== 頁面容器 ========== */
+.page-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ========== 頭部 ========== */
 .header {
   display: flex;
   justify-content: space-between;
@@ -92,9 +81,8 @@ body {
   border-bottom: 1px solid var(--color-border);
   position: sticky;
   top: 0;
-  z-index: 100;
-  backdrop-filter: blur(10px);
-  background: rgba(36, 36, 36, 0.95);
+  z-index: 50;
+  flex-shrink: 0;
 }
 
 .header-left {
@@ -114,17 +102,13 @@ body {
   color: var(--color-text-primary);
   font-size: var(--font-size-xl);
   cursor: pointer;
-  transition: transform var(--transition-fast);
 }
 
-.header-right:active {
-  transform: scale(0.9);
-}
-
-/* 搜索欄 */
+/* ========== 搜索欄 ========== */
 .search-container {
   padding: var(--spacing-lg);
   background: var(--color-bg-secondary);
+  flex-shrink: 0;
 }
 
 .search-box {
@@ -134,11 +118,6 @@ body {
   border-radius: var(--radius-lg);
   padding: var(--spacing-md) var(--spacing-lg);
   gap: var(--spacing-sm);
-}
-
-.search-icon {
-  font-size: var(--font-size-lg);
-  color: var(--color-text-tertiary);
 }
 
 .search-input {
@@ -154,12 +133,14 @@ body {
   color: var(--color-text-tertiary);
 }
 
-/* 分類標籤 */
+/* ========== 分類標籤（藍色區域） ========== */
 .tabs-container {
   padding: var(--spacing-md) var(--spacing-lg);
+  background: var(--color-bg-secondary);
+  border-bottom: 1px solid var(--color-border);
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
-  background: var(--color-bg-secondary);
+  flex-shrink: 0;
 }
 
 .tabs-container::-webkit-scrollbar {
@@ -181,7 +162,7 @@ body {
   font-size: var(--font-size-sm);
   white-space: nowrap;
   cursor: pointer;
-  transition: all var(--transition-base);
+  transition: all 0.3s;
   user-select: none;
 }
 
@@ -192,328 +173,159 @@ body {
   font-weight: 600;
 }
 
-.tab:hover {
-  background: var(--color-bg-card);
-}
-
-/* 內容區域 */
+/* ========== 主內容區域（綠色區域）========== */
 .content {
-  padding: var(--spacing-lg);
+  flex: 1;
+  padding: var(--spacing-md) var(--spacing-lg);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
-/* 工具卡片 */
+/* ========== 工具卡片 ========== */
 .tool-card {
   background: var(--color-bg-secondary);
-  border-radius: var(--radius-xl);
-  padding: var(--spacing-lg);
-  margin-bottom: var(--spacing-md);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-sm);
   display: flex;
   align-items: center;
-  gap: var(--spacing-lg);
+  gap: var(--spacing-md);
   cursor: pointer;
-  transition: all var(--transition-base);
-  box-shadow: var(--shadow-md);
-  min-height: 100px;
+  transition: all 0.3s;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  min-height: 80px;
   border: 1px solid var(--color-border);
 }
 
 .tool-card:active {
   transform: scale(0.98);
-  box-shadow: var(--shadow-sm);
-}
-
-.tool-card:hover {
-  border-color: var(--color-border-light);
 }
 
 .tool-icon {
-  width: 72px;
-  height: 72px;
-  border-radius: var(--radius-lg);
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-md);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 32px;
+  font-size: 28px;
   flex-shrink: 0;
 }
 
 .tool-content {
   flex: 1;
+  min-width: 0;
 }
 
 .tool-title {
   color: var(--color-text-primary);
-  font-size: var(--font-size-md);
+  font-size: var(--font-size-base);
   font-weight: 600;
   margin-bottom: var(--spacing-xs);
 }
 
 .tool-description {
   color: var(--color-text-tertiary);
-  font-size: var(--font-size-sm);
-  line-height: 1.4;
+  font-size: var(--font-size-xs);
   overflow: hidden;
   text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+  white-space: nowrap;
 }
 
 .tool-arrow {
   color: var(--color-text-tertiary);
   font-size: var(--font-size-lg);
+  flex-shrink: 0;
 }
 
-/* 分頁內容 */
-.page-section {
-  display: none;
+/* ========== 底部抽屜（紅色區域）- 全螢幕極限 ========== */
+.bottom-sheet-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
 }
 
-.page-section.active {
-  display: block;
-  animation: fadeIn var(--transition-base);
+.bottom-sheet-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
 }
 
-/* 標籤頁切換 */
-.tab-page {
-  display: none;
-}
-
-.tab-page.active {
-  display: block;
-  animation: fadeIn var(--transition-base);
-}
-
-/* 打卡頁面 */
-#checkinTab {
-  background: var(--color-bg-secondary);
-  border-radius: var(--radius-xl);
-  padding: var(--spacing-xl);
-  margin-bottom: var(--spacing-lg);
-  box-shadow: var(--shadow-md);
-}
-
-.tabs-inner {
-  display: flex;
-  gap: var(--spacing-sm);
-  margin-bottom: var(--spacing-xl);
-  background: var(--color-bg-tertiary);
-  border-radius: var(--radius-lg);
-  padding: var(--spacing-sm);
-}
-
-.tab-inner {
-  flex: 1;
-  padding: var(--spacing-md);
-  text-align: center;
-  cursor: pointer;
-  border-bottom: 3px solid transparent;
-  color: var(--color-text-tertiary);
-  font-size: var(--font-size-sm);
-  font-weight: 500;
-  transition: all var(--transition-base);
-  border-radius: var(--radius-md);
-}
-
-.tab-inner.active {
-  color: var(--color-text-primary);
-  background: var(--color-bg-card);
-  border-bottom-color: var(--color-energy);
-}
-
-#notice {
-  text-align: center;
-  min-height: 24px;
-  margin: var(--spacing-sm) 0;
-  font-weight: bold;
-  font-size: var(--font-size-md);
-  animation: slideDown var(--transition-base);
-}
-
-#idleTime {
-  text-align: center;
-  min-height: 24px;
-  margin: var(--spacing-sm) 0 var(--spacing-lg);
-  color: var(--color-energy);
-  font-weight: bold;
-  font-size: var(--font-size-sm);
-  padding: var(--spacing-xs);
-  background: rgba(255, 213, 79, 0.1);
-  border-radius: var(--radius-sm);
-  animation: pulse 2s infinite;
-}
-
-select {
+.bottom-sheet {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--color-bg-primary);
+  z-index: 1000;
   width: 100%;
-  padding: var(--spacing-md);
-  font-size: var(--font-size-base);
-  margin: var(--spacing-xs) 0 var(--spacing-lg);
-  background: var(--color-bg-tertiary);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  color: var(--color-text-secondary);
-  transition: all var(--transition-base);
-  cursor: pointer;
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23888' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 10px center;
-  padding-right: 35px;
-}
-
-select:focus {
-  outline: none;
-  border-color: var(--color-border-light);
-  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.05);
-}
-
-.button-row {
+  height: 100%;
+  max-height: 100vh;
   display: flex;
-  justify-content: space-between;
-  gap: var(--spacing-sm);
-  margin-bottom: var(--spacing-lg);
+  flex-direction: column;
+  transform: translateY(100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  touch-action: none;
 }
 
-.button-row button {
-  flex: 1;
-}
-
-button {
-  padding: var(--spacing-md);
-  font-size: var(--font-size-base);
-  margin: var(--spacing-xs) 0;
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  background: var(--color-bg-tertiary);
-  border: 1px solid var(--color-border);
-  color: var(--color-text-secondary);
-  font-weight: 500;
-  transition: all var(--transition-base);
-  position: relative;
-  overflow: hidden;
-  box-shadow: var(--shadow-sm);
-}
-
-button:hover {
-  border-color: var(--color-border-light);
-  color: var(--color-text-primary);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
-}
-
-button:active {
+.bottom-sheet.active {
   transform: translateY(0);
 }
 
-/* 歷史紀錄 */
-#entries {
-  max-height: 300px;
-  overflow-y: auto;
-  list-style: none;
-  padding: var(--spacing-sm);
-  margin-top: var(--spacing-sm);
-  background: var(--color-bg-tertiary);
-  border-radius: var(--radius-md);
-  box-shadow: inset var(--shadow-sm);
+.bottom-sheet-handle {
+  width: 40px;
+  height: 4px;
+  background: var(--color-border-light);
+  border-radius: 2px;
+  margin: var(--spacing-lg) auto;
+  cursor: grab;
 }
 
-#entries::-webkit-scrollbar {
-  width: 6px;
-}
-
-#entries::-webkit-scrollbar-track {
-  background: var(--color-bg-tertiary);
-}
-
-#entries::-webkit-scrollbar-thumb {
-  background: var(--color-border);
-  border-radius: 3px;
-}
-
-#entries li {
-  margin-bottom: var(--spacing-sm);
+.bottom-sheet-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 var(--spacing-lg) var(--spacing-lg);
   border-bottom: 1px solid var(--color-border);
-  padding: var(--spacing-sm) var(--spacing-xs);
-  animation: fadeIn var(--transition-base);
-  transition: background var(--transition-base);
-  border-radius: var(--radius-sm);
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-sm);
+  flex-shrink: 0;
 }
 
-#entries li:hover {
-  background: var(--color-bg-card);
+.bottom-sheet-title {
+  color: var(--color-text-primary);
+  font-size: var(--font-size-lg);
+  font-weight: 600;
 }
 
-#entries li:last-child {
-  border-bottom: none;
+.bottom-sheet-close {
+  font-size: var(--font-size-xl);
+  cursor: pointer;
+  color: var(--color-text-tertiary);
 }
 
-/* 表格 */
-table {
-  border-collapse: collapse;
+.bottom-sheet-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  padding: var(--spacing-lg);
   width: 100%;
-  margin-top: var(--spacing-sm);
-  background: var(--color-bg-tertiary);
+}
+
+.bottom-sheet-content iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
   border-radius: var(--radius-md);
-  overflow: hidden;
-  box-shadow: var(--shadow-sm);
 }
 
-th, td {
-  border: 1px solid var(--color-border);
-  padding: var(--spacing-sm);
-  text-align: center;
-  transition: background var(--transition-fast);
-}
-
-th {
-  background: var(--color-bg-card);
-  color: var(--color-text-primary);
-  font-weight: bold;
-  text-transform: uppercase;
-  font-size: var(--font-size-xs);
-  letter-spacing: 0.5px;
-}
-
-td {
-  color: var(--color-text-secondary);
-}
-
-tr:hover td {
-  background: var(--color-bg-card);
-}
-
-/* 報表輸出 */
-#reportOutput {
-  max-height: 350px;
-  overflow: auto;
-  padding: var(--spacing-sm);
-  background: var(--color-bg-tertiary);
-  border-radius: var(--radius-md);
-  box-shadow: inset var(--shadow-sm);
-}
-
-#reportOutput::-webkit-scrollbar {
-  width: 6px;
-}
-
-#reportOutput::-webkit-scrollbar-track {
-  background: var(--color-bg-tertiary);
-}
-
-#reportOutput::-webkit-scrollbar-thumb {
-  background: var(--color-border);
-  border-radius: 3px;
-}
-
-h3 {
-  color: var(--color-text-primary);
-  font-size: var(--font-size-md);
-  margin: var(--spacing-lg) 0 var(--spacing-md);
-}
-
-/* 底部導航 */
+/* ========== 底部導航（黃色區域）- 獨立分開 ========== */
 .bottom-nav {
   position: fixed;
   bottom: 0;
@@ -525,8 +337,7 @@ h3 {
   justify-content: space-around;
   padding: var(--spacing-sm) 0;
   z-index: 100;
-  backdrop-filter: blur(10px);
-  background: rgba(36, 36, 36, 0.95);
+  flex-shrink: 0;
 }
 
 .nav-item {
@@ -534,12 +345,12 @@ h3 {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--spacing-xs);
+  gap: 2px;
   padding: var(--spacing-xs);
   color: var(--color-text-tertiary);
   font-size: var(--font-size-xs);
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: all 0.2s;
   user-select: none;
 }
 
@@ -548,214 +359,142 @@ h3 {
 }
 
 .nav-icon {
-  font-size: var(--font-size-xl);
+  font-size: 22px;
 }
 
-.nav-item:active {
-  transform: scale(0.95);
+/* ========== 分類內容（模板系統）========== */
+.category-section {
+  display: none;
 }
 
-/* 動畫效果 */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.category-section.active {
+  display: block;
 }
 
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* ========== 分類選項卡（橫向標籤）========== */
+.category-tabs {
+  display: flex;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-lg);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
-@keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.7;
-  }
+.category-tabs::-webkit-scrollbar {
+  display: none;
 }
 
-/* 響應式設計 */
-@media (max-width: 600px) {
-  :root {
-    --font-size-base: 14px;
-    --spacing-lg: 12px;
-  }
-  
-  body {
-    padding-bottom: 70px;
-  }
-  
-  .tool-card {
-    min-height: 90px;
-  }
-  
-  .tool-icon {
-    width: 64px;
-    height: 64px;
-    font-size: 28px;
-  }
+.category-tab {
+  padding: var(--spacing-sm) var(--spacing-lg);
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.3s;
 }
 
-@media (max-width: 375px) {
-  :root {
-    --font-size-base: 13px;
-    --spacing-lg: 10px;
-  }
-  
-  .tool-card {
-    min-height: 80px;
-    padding: var(--spacing-md);
-    gap: var(--spacing-md);
-  }
-  
-  .tool-icon {
-    width: 56px;
-    height: 56px;
-    font-size: 24px;
-  }
+.category-tab.active {
+  background: var(--color-bg-card);
+  border-color: var(--color-border-light);
+  color: var(--color-text-primary);
+  font-weight: 600;
 }
 
-/* iOS Safari 優化 */
+/* ========== 頁面容器 ========== */
+.page-section {
+  display: none;
+}
+
+.page-section.active {
+  display: block;
+}
+
+/* iOS 優化 */
 @supports (-webkit-touch-callout: none) {
   body {
     min-height: -webkit-fill-available;
   }
 }
-
-.hidden {
-  display: none !important;
-}
 </style>
 </head>
 <body>
 
-<!-- 頭部 -->
-<div class="header">
-  <div class="header-left" onclick="switchPage('history')">歷史</div>
-  <div class="header-center">分類</div>
-  <div class="header-right" onclick="toggleMenu()">☰</div>
-</div>
-
-<!-- 搜索欄 -->
-<div class="search-container">
-  <div class="search-box">
-    <div class="search-icon">🔍</div>
-    <input type="text" class="search-input" placeholder="搜尋" id="searchInput" oninput="handleSearch()">
-  </div>
-</div>
-
-<!-- 分類標籤 -->
-<div class="tabs-container">
-  <div class="tabs" id="tabsContainer">
-    <div class="tab active" onclick="filterTab('integrate')">整合</div>
-    <div class="tab" onclick="filterTab('tattoo')">刺青</div>
-    <div class="tab" onclick="filterTab('energy')">能量</div>
-    <div class="tab" onclick="filterTab('record')">紀錄</div>
-  </div>
-</div>
-
-<!-- 內容區域 -->
-<div class="content" id="mainContent">
+<!-- 頁面容器 -->
+<div class="page-wrapper">
   
-  <!-- 整合頁面 -->
-  <div id="integratePage" class="page-section active">
-    <div id="toolsList"></div>
+  <!-- 頭部 -->
+  <div class="header">
+    <div class="header-left" onclick="goBack()">返回</div>
+    <div class="header-center">整合工具</div>
+    <div class="header-right" onclick="toggleMenu()">☰</div>
   </div>
 
-  <!-- 打卡頁面 -->
-  <div id="checkinPage" class="page-section" style="display:none;">
-    <div id="checkinTab">
-      <div class="tabs-inner">
-        <div class="tab-inner active" onclick="switchCheckinTab(0)">📌 打卡</div>
-        <div class="tab-inner" onclick="switchCheckinTab(1)">📊 報表</div>
-      </div>
-
-      <div id="checkinContent">
-        <div id="notice"></div>
-        <div id="idleTime"></div>
-
-        <select id="task">
-          <option>🎨 畫畫</option>
-          <option>🛌 休息</option>
-          <option>🖋 刺青</option>
-          <option>🏃 運動</option>
-          <option>🎥 拍片</option>
-          <option>📖 復盤</option>
-          <option>🛁 洗澡</option>
-          <option>🍚 吃飯</option>
-          <option>🧹 整理</option>
-          <option>💪 練功</option>
-          <option>🧘 內在</option>
-          <option>🌍 外在</option>
-          <option>👥 客源</option>
-          <option>📝 規劃</option>
-          <option>💰 記帳</option>
-        </select>
-
-        <div class="button-row">
-          <button onclick="startTask()">▶️ 開始任務</button>
-          <button onclick="endTask()">⏹ 結束任務</button>
-        </div>
-
-        <h3>📅 時間規劃</h3>
-        <ul id="entries"></ul>
-      </div>
-
-      <div id="reportContent" style="display:none;">
-        <button onclick="generateDailyReport()">📅 生成今日報表</button>
-        <button onclick="copyReport()">📋 複製報表</button>
-        <h3>今日報表</h3>
-        <div id="reportOutput"></div>
-      </div>
-    </div>
-
-    <div style="max-width: 450px; margin: var(--spacing-xl) auto; padding: var(--spacing-lg); text-align: center; border: 2px solid #ff6666; border-radius: var(--radius-lg); background: var(--color-bg-secondary); box-shadow: var(--shadow-md);">
-      <h3 style="color: #ff6666; margin-bottom: var(--spacing-md);">🗑 清空紀錄</h3>
-      <button onclick="clearAllData()">清空全部紀錄</button>
-      <p id="status" style="margin-top: var(--spacing-md); font-weight: bold; color: lightgreen;"></p>
+  <!-- 搜索欄 -->
+  <div class="search-container">
+    <div class="search-box">
+      <div style="font-size: 18px;">🔍</div>
+      <input type="text" class="search-input" placeholder="搜尋工具" id="searchInput" oninput="handleSearch()">
     </div>
   </div>
 
-  <!-- 刺青頁面 -->
-  <div id="tattooPage" class="page-section" style="display:none;">
-    <div style="text-align: center; padding: var(--spacing-xl);">
-      <p style="color: var(--color-text-tertiary); font-size: var(--font-size-lg);">刺青頁面</p>
-      <p style="color: var(--color-text-tertiary); margin-top: var(--spacing-lg);">您可以在此添加刺青相關工具</p>
+  <!-- 分類標籤（藍色區域）- 主導航 -->
+  <div class="tabs-container">
+    <div class="tabs" id="mainTabs">
+      <div class="tab active" onclick="switchMainTab('integrate')">整合</div>
+      <div class="tab" onclick="switchMainTab('tattoo')">刺青</div>
+      <div class="tab" onclick="switchMainTab('energy')">能量</div>
+      <div class="tab" onclick="switchMainTab('record')">紀錄</div>
     </div>
   </div>
 
-  <!-- 能量頁面 -->
-  <div id="energyPage" class="page-section" style="display:none;">
-    <div style="text-align: center; padding: var(--spacing-xl);">
-      <p style="color: var(--color-text-tertiary); font-size: var(--font-size-lg);">能量頁面</p>
-      <p style="color: var(--color-text-tertiary); margin-top: var(--spacing-lg);">您可以在此添加能量相關工具</p>
+  <!-- 主內容區域（綠色區域） -->
+  <div class="content" id="mainContent">
+    
+    <!-- 整合分類 -->
+    <div id="integratePage" class="page-section active">
+      <div id="integrateGrid"></div>
     </div>
-  </div>
 
-  <!-- 紀錄頁面 -->
-  <div id="recordPage" class="page-section" style="display:none;">
-    <div style="text-align: center; padding: var(--spacing-xl);">
-      <p style="color: var(--color-text-tertiary); font-size: var(--font-size-lg);">紀錄頁面</p>
-      <p style="color: var(--color-text-tertiary); margin-top: var(--spacing-lg);">您可以在此添加紀錄相關工具</p>
+    <!-- 刺青分類 -->
+    <div id="tattooPage" class="page-section">
+      <!-- 刺青內部標籤 -->
+      <div class="category-tabs" id="tattooTabs"></div>
+      <!-- 刺青內容 -->
+      <div id="tattooContent"></div>
     </div>
+
+    <!-- 能量分類 -->
+    <div id="energyPage" class="page-section">
+      <!-- 能量內部標籤 -->
+      <div class="category-tabs" id="energyTabs"></div>
+      <!-- 能量內容 -->
+      <div id="energyContent"></div>
+    </div>
+
+    <!-- 紀錄分類 -->
+    <div id="recordPage" class="page-section">
+      <div id="recordContent"></div>
+    </div>
+
   </div>
 
 </div>
 
-<!-- 底部導航 -->
+<!-- 底部抽屜（紅色區域）- 全螢幕極限 -->
+<div class="bottom-sheet-overlay" id="bottomSheetOverlay" onclick="closeBottomSheet()"></div>
+<div class="bottom-sheet" id="bottomSheet">
+  <div class="bottom-sheet-handle"></div>
+  <div class="bottom-sheet-header">
+    <div class="bottom-sheet-title" id="sheetTitle">工具</div>
+    <div class="bottom-sheet-close" onclick="closeBottomSheet()">✕</div>
+  </div>
+  <div class="bottom-sheet-content" id="sheetContent"></div>
+</div>
+
+<!-- 底部導航（黃色區域）- 獨立分開 -->
 <div class="bottom-nav">
   <div class="nav-item active" onclick="switchMainTab('integrate')">
     <div class="nav-icon">📦</div>
@@ -776,116 +515,171 @@ h3 {
 </div>
 
 <script>
-// ============ localStorage 管理 ============
+// ============ 儲存鍵值 ============
 const STORAGE_KEYS = {
-  TASK_ENTRIES: 'integrateTool_taskEntries',
   TOOLS_LIST: 'integrateTool_toolsList',
-  SETTINGS: 'integrateTool_settings',
-  HISTORY: 'integrateTool_history'
+  TATTOO_CATEGORIES: 'integrateTool_tattooCategories',
+  ENERGY_CATEGORIES: 'integrateTool_energyCategories',
+  RECORDS: 'integrateTool_records',
+  CURRENT_MAIN_TAB: 'integrateTool_currentMainTab'
 };
 
-// 預設工具列表
+// ============ 整合分類工具（可無限延續）============
 const DEFAULT_TOOLS = [
   {
-    id: 'checkin',
-    title: '每日打卡',
-    category: 'integrate',
-    description: '記錄每日任務時間，生成工作報表',
-    icon: '✅',
-    color: '#FF8A80'
+    id: 'tool1',
+    title: '工具1',
+    description: 'apple1 功能說明',
+    icon: '🍎',
+    color: '#FF8A80',
+    url: 'https://30ta2.github.io/ap/apple1.html'
   },
   {
     id: 'tool2',
     title: '工具2',
-    category: 'integrate',
-    description: '自訂工具說明',
-    icon: '🔧',
-    color: '#82B1FF'
+    description: 'apple2 功能說明',
+    icon: '🍏',
+    color: '#82B1FF',
+    url: 'https://30ta2.github.io/ap/apple2.html'
   },
   {
     id: 'tool3',
     title: '工具3',
-    category: 'integrate',
     description: '自訂工具說明',
-    icon: '📊',
-    color: '#FFD54F'
+    icon: '🔧',
+    color: '#FFD54F',
+    url: ''
   },
   {
     id: 'tool4',
     title: '工具4',
-    category: 'integrate',
     description: '自訂工具說明',
-    icon: '⚙️',
-    color: '#69F0AE'
+    icon: '📊',
+    color: '#69F0AE',
+    url: ''
   },
   {
     id: 'tool5',
     title: '工具5',
-    category: 'integrate',
     description: '自訂工具說明',
-    icon: '🎯',
-    color: '#B388FF'
+    icon: '⚙️',
+    color: '#B388FF',
+    url: ''
   },
   {
     id: 'tool6',
     title: '工具6',
-    category: 'integrate',
     description: '自訂工具說明',
-    icon: '💡',
-    color: '#64B5F6'
+    icon: '🎯',
+    color: '#64B5F6',
+    url: ''
   },
   {
     id: 'tool7',
     title: '工具7',
-    category: 'integrate',
     description: '自訂工具說明',
-    icon: '🚀',
-    color: '#FF8A65'
+    icon: '💡',
+    color: '#FF8A65',
+    url: ''
   },
   {
     id: 'tool8',
     title: '工具8',
-    category: 'integrate',
     description: '自訂工具說明',
-    icon: '📱',
-    color: '#FFD740'
+    icon: '🚀',
+    color: '#FFD740',
+    url: ''
   }
 ];
 
+// ============ 刺青分類模板 ============
+const DEFAULT_TATTOO_CATEGORIES = [
+  {
+    id: 'tattoo_cat1',
+    name: '計數器',
+    icon: '🔢',
+    color: '#FF8A80',
+    items: []
+  },
+  {
+    id: 'tattoo_cat2',
+    name: '統計',
+    icon: '📊',
+    color: '#82B1FF',
+    items: []
+  }
+];
+
+// ============ 能量分類模板 ============
+const DEFAULT_ENERGY_CATEGORIES = [
+  {
+    id: 'energy_cat1',
+    name: '計數器',
+    icon: '🔢',
+    color: '#FFD54F',
+    items: []
+  },
+  {
+    id: 'energy_cat2',
+    name: '統計',
+    icon: '📈',
+    color: '#69F0AE',
+    items: []
+  }
+];
+
+// ============ 全局變數 ============
+let allTools = [];
+let tattooCategories = [];
+let energyCategories = [];
+let currentMainTab = 'integrate';
+let currentTattooTab = '';
+let currentEnergyTab = '';
+let sheetStartY = 0;
+let sheetCurrentY = 0;
+
 // ============ 初始化 ============
 function initApp() {
-  loadTools();
-  loadSettings();
-  loadHistory();
+  loadAllData();
+  renderIntegrate();
+  renderTattooCategories();
+  renderEnergyCategories();
+  setupBottomSheetGestures();
 }
 
-// ============ 工具管理 ============
-function loadTools() {
-  let tools = localStorage.getItem(STORAGE_KEYS.TOOLS_LIST);
-  if (!tools) {
-    tools = DEFAULT_TOOLS;
-    saveTools(tools);
-  } else {
-    tools = JSON.parse(tools);
-  }
-  renderTools(tools);
+function loadAllData() {
+  const toolsData = localStorage.getItem(STORAGE_KEYS.TOOLS_LIST);
+  allTools = toolsData ? JSON.parse(toolsData) : DEFAULT_TOOLS;
+  if (!toolsData) localStorage.setItem(STORAGE_KEYS.TOOLS_LIST, JSON.stringify(allTools));
+
+  const tattooData = localStorage.getItem(STORAGE_KEYS.TATTOO_CATEGORIES);
+  tattooCategories = tattooData ? JSON.parse(tattooData) : DEFAULT_TATTOO_CATEGORIES;
+  if (!tattooData) localStorage.setItem(STORAGE_KEYS.TATTOO_CATEGORIES, JSON.stringify(tattooCategories));
+
+  const energyData = localStorage.getItem(STORAGE_KEYS.ENERGY_CATEGORIES);
+  energyCategories = energyData ? JSON.parse(energyData) : DEFAULT_ENERGY_CATEGORIES;
+  if (!energyData) localStorage.setItem(STORAGE_KEYS.ENERGY_CATEGORIES, JSON.stringify(energyCategories));
 }
 
-function saveTools(tools) {
-  localStorage.setItem(STORAGE_KEYS.TOOLS_LIST, JSON.stringify(tools));
+function saveAllData() {
+  localStorage.setItem(STORAGE_KEYS.TOOLS_LIST, JSON.stringify(allTools));
+  localStorage.setItem(STORAGE_KEYS.TATTOO_CATEGORIES, JSON.stringify(tattooCategories));
+  localStorage.setItem(STORAGE_KEYS.ENERGY_CATEGORIES, JSON.stringify(energyCategories));
 }
 
-function renderTools(tools) {
-  const toolsList = document.getElementById('toolsList');
-  toolsList.innerHTML = '';
-  
-  tools.forEach(tool => {
+// ============ 整合分類渲染 ============
+function renderIntegrate() {
+  const grid = document.getElementById('integrateGrid');
+  grid.innerHTML = '';
+
+  allTools.forEach(tool => {
     const card = document.createElement('div');
-    card.className = 'tool-card fade-in';
-    card.onclick = () => openTool(tool.id);
-    
+    card.className = 'tool-card';
+    card.onclick = () => openTool(tool);
+
+    const gradientColor = adjustColor(tool.color, -20);
     card.innerHTML = `
-      <div class="tool-icon" style="background: linear-gradient(135deg, ${tool.color} 0%, ${adjustColor(tool.color, -20)} 100%);">
+      <div class="tool-icon" style="background: linear-gradient(135deg, ${tool.color} 0%, ${gradientColor} 100%);">
         ${tool.icon}
       </div>
       <div class="tool-content">
@@ -894,317 +688,424 @@ function renderTools(tools) {
       </div>
       <div class="tool-arrow">›</div>
     `;
-    
-    toolsList.appendChild(card);
+
+    grid.appendChild(card);
   });
 }
 
-function adjustColor(color, amount) {
-  const col = parseInt(color.slice(1), 16);
-  const num = Math.round(Math.max(0, Math.min(255, (col & 0xFF) + amount))) |
-              (Math.round(Math.max(0, Math.min(255, (col >> 8 & 0xFF) + amount))) << 8) |
-              (Math.round(Math.max(0, Math.min(255, (col >> 16 & 0xFF) + amount))) << 16);
-  return '#' + num.toString(16).padStart(6, '0');
+// ============ 刺青分類模板系統 ============
+function renderTattooCategories() {
+  const tabsContainer = document.getElementById('tattooTabs');
+  const contentContainer = document.getElementById('tattooContent');
+  
+  tabsContainer.innerHTML = '';
+  contentContainer.innerHTML = '';
+
+  tattooCategories.forEach((category, index) => {
+    const tab = document.createElement('div');
+    tab.className = `category-tab ${index === 0 ? 'active' : ''}`;
+    tab.textContent = category.name;
+    tab.onclick = () => switchTattooTab(category.id);
+    tabsContainer.appendChild(tab);
+  });
+
+  if (tattooCategories.length > 0) {
+    currentTattooTab = tattooCategories[0].id;
+    renderTattooTabContent(currentTattooTab);
+  }
 }
 
-function openTool(toolId) {
-  if (toolId === 'checkin') {
-    switchMainTab('integrate');
-    switchPage('checkin');
-  } else {
-    alert(`打開工具: ${toolId}\n\n您可以在此連接其他HTML頁面`);
+function switchTattooTab(categoryId) {
+  currentTattooTab = categoryId;
+  
+  document.querySelectorAll('#tattooTabs .category-tab').forEach(tab => {
+    tab.classList.remove('active');
+  });
+  event.target.classList.add('active');
+
+  renderTattooTabContent(categoryId);
+}
+
+function renderTattooTabContent(categoryId) {
+  const category = tattooCategories.find(c => c.id === categoryId);
+  const contentContainer = document.getElementById('tattooContent');
+  
+  if (!category) return;
+
+  contentContainer.innerHTML = '';
+
+  if (category.items.length === 0) {
+    contentContainer.innerHTML = `
+      <div style="text-align: center; padding: 40px; color: var(--color-text-tertiary);">
+        <div style="font-size: 48px; margin-bottom: 16px;">📭</div>
+        <p>此分類暫無內容</p>
+        <p style="font-size: var(--font-size-sm); margin-top: 16px;">點擊下方按鈕添加</p>
+      </div>
+      <button onclick="addTattooItem('${categoryId}')" style="width: 100%; padding: var(--spacing-lg); background: var(--color-bg-tertiary); border: 1px solid var(--color-border); color: var(--color-text-secondary); border-radius: var(--radius-md); cursor: pointer; margin-top: 16px;">➕ 添加新項目</button>
+    `;
+    return;
   }
+
+  category.items.forEach(item => {
+    const itemCard = document.createElement('div');
+    itemCard.className = 'tool-card';
+    itemCard.style.marginBottom = 'var(--spacing-sm)';
+    itemCard.onclick = () => openTool({title: item.title, url: item.url});
+
+    itemCard.innerHTML = `
+      <div style="flex: 1;">
+        <div class="tool-title">${item.title || '未命名'}</div>
+        <div class="tool-description">${item.url || '無連結'}</div>
+      </div>
+      <div style="display: flex; gap: 8px;">
+        <button onclick="event.stopPropagation(); editTattooItem('${categoryId}', '${item.id}')" style="background: none; border: none; color: var(--color-text-tertiary); cursor: pointer; font-size: 18px;">✏️</button>
+        <button onclick="event.stopPropagation(); deleteTattooItem('${categoryId}', '${item.id}')" style="background: none; border: none; color: #ff6b6b; cursor: pointer; font-size: 18px;">🗑️</button>
+      </div>
+    `;
+
+    contentContainer.appendChild(itemCard);
+  });
+
+  const addBtn = document.createElement('button');
+  addBtn.innerHTML = '➕ 添加新項目';
+  addBtn.onclick = () => addTattooItem(categoryId);
+  addBtn.style.cssText = 'width: 100%; padding: var(--spacing-lg); background: var(--color-bg-tertiary); border: 1px solid var(--color-border); color: var(--color-text-secondary); border-radius: var(--radius-md); cursor: pointer; margin-top: var(--spacing-lg);';
+  
+  contentContainer.appendChild(addBtn);
+}
+
+function addTattooItem(categoryId) {
+  const title = prompt('請輸入項目名稱:');
+  if (!title) return;
+
+  const url = prompt('請輸入 HTML 連結:');
+  if (!url) return;
+
+  const category = tattooCategories.find(c => c.id === categoryId);
+  if (category) {
+    category.items.push({
+      id: Date.now().toString(),
+      title: title,
+      url: url
+    });
+    saveAllData();
+    renderTattooTabContent(categoryId);
+  }
+}
+
+function editTattooItem(categoryId, itemId) {
+  const category = tattooCategories.find(c => c.id === categoryId);
+  const item = category.items.find(i => i.id === itemId);
+  
+  if (item) {
+    const newTitle = prompt('編輯名稱:', item.title);
+    if (newTitle !== null) item.title = newTitle;
+    
+    const newUrl = prompt('編輯連結:', item.url);
+    if (newUrl !== null) item.url = newUrl;
+    
+    saveAllData();
+    renderTattooTabContent(categoryId);
+  }
+}
+
+function deleteTattooItem(categoryId, itemId) {
+  if (confirm('確定要刪除此項目嗎？')) {
+    const category = tattooCategories.find(c => c.id === categoryId);
+    if (category) {
+      category.items = category.items.filter(i => i.id !== itemId);
+      saveAllData();
+      renderTattooTabContent(categoryId);
+    }
+  }
+}
+
+// ============ 能量分類模板系統 ============
+function renderEnergyCategories() {
+  const tabsContainer = document.getElementById('energyTabs');
+  const contentContainer = document.getElementById('energyContent');
+  
+  tabsContainer.innerHTML = '';
+  contentContainer.innerHTML = '';
+
+  energyCategories.forEach((category, index) => {
+    const tab = document.createElement('div');
+    tab.className = `category-tab ${index === 0 ? 'active' : ''}`;
+    tab.textContent = category.name;
+    tab.onclick = () => switchEnergyTab(category.id);
+    tabsContainer.appendChild(tab);
+  });
+
+  if (energyCategories.length > 0) {
+    currentEnergyTab = energyCategories[0].id;
+    renderEnergyTabContent(currentEnergyTab);
+  }
+}
+
+function switchEnergyTab(categoryId) {
+  currentEnergyTab = categoryId;
+  
+  document.querySelectorAll('#energyTabs .category-tab').forEach(tab => {
+    tab.classList.remove('active');
+  });
+  event.target.classList.add('active');
+
+  renderEnergyTabContent(categoryId);
+}
+
+function renderEnergyTabContent(categoryId) {
+  const category = energyCategories.find(c => c.id === categoryId);
+  const contentContainer = document.getElementById('energyContent');
+  
+  if (!category) return;
+
+  contentContainer.innerHTML = '';
+
+  if (category.items.length === 0) {
+    contentContainer.innerHTML = `
+      <div style="text-align: center; padding: 40px; color: var(--color-text-tertiary);">
+        <div style="font-size: 48px; margin-bottom: 16px;">📭</div>
+        <p>此分類暫無內容</p>
+        <p style="font-size: var(--font-size-sm); margin-top: 16px;">點擊下方按鈕添加</p>
+      </div>
+      <button onclick="addEnergyItem('${categoryId}')" style="width: 100%; padding: var(--spacing-lg); background: var(--color-bg-tertiary); border: 1px solid var(--color-border); color: var(--color-text-secondary); border-radius: var(--radius-md); cursor: pointer; margin-top: 16px;">➕ 添加新項目</button>
+    `;
+    return;
+  }
+
+  category.items.forEach(item => {
+    const itemCard = document.createElement('div');
+    itemCard.className = 'tool-card';
+    itemCard.style.marginBottom = 'var(--spacing-sm)';
+    itemCard.onclick = () => openTool({title: item.title, url: item.url});
+
+    itemCard.innerHTML = `
+      <div style="flex: 1;">
+        <div class="tool-title">${item.title || '未命名'}</div>
+        <div class="tool-description">${item.url || '無連結'}</div>
+      </div>
+      <div style="display: flex; gap: 8px;">
+        <button onclick="event.stopPropagation(); editEnergyItem('${categoryId}', '${item.id}')" style="background: none; border: none; color: var(--color-text-tertiary); cursor: pointer; font-size: 18px;">✏️</button>
+        <button onclick="event.stopPropagation(); deleteEnergyItem('${categoryId}', '${item.id}')" style="background: none; border: none; color: #ff6b6b; cursor: pointer; font-size: 18px;">🗑️</button>
+      </div>
+    `;
+
+    contentContainer.appendChild(itemCard);
+  });
+
+  const addBtn = document.createElement('button');
+  addBtn.innerHTML = '➕ 添加新項目';
+  addBtn.onclick = () => addEnergyItem(categoryId);
+  addBtn.style.cssText = 'width: 100%; padding: var(--spacing-lg); background: var(--color-bg-tertiary); border: 1px solid var(--color-border); color: var(--color-text-secondary); border-radius: var(--radius-md); cursor: pointer; margin-top: var(--spacing-lg);';
+  
+  contentContainer.appendChild(addBtn);
+}
+
+function addEnergyItem(categoryId) {
+  const title = prompt('請輸入項目名稱:');
+  if (!title) return;
+
+  const url = prompt('請輸入 HTML 連結:');
+  if (!url) return;
+
+  const category = energyCategories.find(c => c.id === categoryId);
+  if (category) {
+    category.items.push({
+      id: Date.now().toString(),
+      title: title,
+      url: url
+    });
+    saveAllData();
+    renderEnergyTabContent(categoryId);
+  }
+}
+
+function editEnergyItem(categoryId, itemId) {
+  const category = energyCategories.find(c => c.id === categoryId);
+  const item = category.items.find(i => i.id === itemId);
+  
+  if (item) {
+    const newTitle = prompt('編輯名稱:', item.title);
+    if (newTitle !== null) item.title = newTitle;
+    
+    const newUrl = prompt('編輯連結:', item.url);
+    if (newUrl !== null) item.url = newUrl;
+    
+    saveAllData();
+    renderEnergyTabContent(categoryId);
+  }
+}
+
+function deleteEnergyItem(categoryId, itemId) {
+  if (confirm('確定要刪除此項目嗎？')) {
+    const category = energyCategories.find(c => c.id === categoryId);
+    if (category) {
+      category.items = category.items.filter(i => i.id !== itemId);
+      saveAllData();
+      renderEnergyTabContent(categoryId);
+    }
+  }
+}
+
+// ============ 工具打開（Bottom Sheet） ============
+function openTool(tool) {
+  if (!tool.url) {
+    alert(`工具 "${tool.title}" 尚未設定頁面`);
+    return;
+  }
+
+  openBottomSheet(tool.title, `<iframe src="${tool.url}"></iframe>`);
+}
+
+// ============ Bottom Sheet 控制 ============
+function openBottomSheet(title, content) {
+  document.getElementById('sheetTitle').textContent = title;
+  document.getElementById('sheetContent').innerHTML = content;
+  document.getElementById('bottomSheet').classList.add('active');
+  document.getElementById('bottomSheetOverlay').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeBottomSheet() {
+  document.getElementById('bottomSheet').classList.remove('active');
+  document.getElementById('bottomSheetOverlay').classList.remove('active');
+  document.body.style.overflow = 'auto';
+}
+
+function setupBottomSheetGestures() {
+  const sheet = document.getElementById('bottomSheet');
+  const handle = document.querySelector('.bottom-sheet-handle');
+  
+  if (!handle) return;
+
+  handle.addEventListener('touchstart', (e) => {
+    sheetStartY = e.touches[0].clientY;
+  });
+
+  handle.addEventListener('touchmove', (e) => {
+    sheetCurrentY = e.touches[0].clientY - sheetStartY;
+    if (sheetCurrentY > 0) {
+      sheet.style.transform = `translateY(${sheetCurrentY}px)`;
+    }
+  });
+
+  handle.addEventListener('touchend', () => {
+    if (sheetCurrentY > 100) {
+      closeBottomSheet();
+    } else {
+      sheet.style.transform = 'translateY(0)';
+    }
+    sheetStartY = 0;
+    sheetCurrentY = 0;
+  });
 }
 
 // ============ 頁面切換 ============
-function switchMainTab(tab) {
-  const navItems = document.querySelectorAll('.nav-item');
-  navItems.forEach(item => item.classList.remove('active'));
-  event.currentTarget.classList.add('active');
-  
-  const sections = document.querySelectorAll('.page-section');
-  sections.forEach(section => section.style.display = 'none');
-  
-  switch(tab) {
+function switchMainTab(tabName) {
+  currentMainTab = tabName;
+  localStorage.setItem(STORAGE_KEYS.CURRENT_MAIN_TAB, tabName);
+
+  // 更新標籤樣式
+  document.querySelectorAll('.tabs .tab').forEach(tab => {
+    tab.classList.remove('active');
+  });
+  document.querySelectorAll('.tabs .tab').forEach(tab => {
+    if ((tabName === 'integrate' && tab.textContent === '整合') ||
+        (tabName === 'tattoo' && tab.textContent === '刺青') ||
+        (tabName === 'energy' && tab.textContent === '能量') ||
+        (tabName === 'record' && tab.textContent === '紀錄')) {
+      tab.classList.add('active');
+    }
+  });
+
+  // 更新導航樣式
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.classList.remove('active');
+  });
+  const navIndex = ['integrate', 'tattoo', 'energy', 'record'].indexOf(tabName);
+  if (navIndex >= 0) {
+    document.querySelectorAll('.nav-item')[navIndex].classList.add('active');
+  }
+
+  // 顯示對應頁面
+  document.querySelectorAll('.page-section').forEach(page => {
+    page.classList.remove('active');
+  });
+
+  switch(tabName) {
     case 'integrate':
-      document.getElementById('integratePage').style.display = 'block';
+      document.getElementById('integratePage').classList.add('active');
       break;
     case 'tattoo':
-      document.getElementById('tattooPage').style.display = 'block';
+      document.getElementById('tattooPage').classList.add('active');
       break;
     case 'energy':
-      document.getElementById('energyPage').style.display = 'block';
+      document.getElementById('energyPage').classList.add('active');
       break;
     case 'record':
-      document.getElementById('recordPage').style.display = 'block';
+      document.getElementById('recordPage').classList.add('active');
       break;
   }
-}
-
-function switchPage(page) {
-  if (page === 'checkin') {
-    document.getElementById('integratePage').style.display = 'none';
-    document.getElementById('checkinPage').style.display = 'block';
-  } else if (page === 'history') {
-    alert('歷史頁面功能');
-  }
-}
-
-function switchCheckinTab(index) {
-  const tabs = document.querySelectorAll('.tab-inner');
-  tabs.forEach((tab, i) => {
-    tab.classList.toggle('active', i === index);
-  });
-  
-  const checkinContent = document.getElementById('checkinContent');
-  const reportContent = document.getElementById('reportContent');
-  
-  if (index === 0) {
-    checkinContent.style.display = 'block';
-    reportContent.style.display = 'none';
-  } else {
-    checkinContent.style.display = 'none';
-    reportContent.style.display = 'block';
-  }
-}
-
-// ============ 分類過濾 ============
-function filterTab(category) {
-  const tabs = document.querySelectorAll('.tab');
-  tabs.forEach(tab => tab.classList.remove('active'));
-  event.currentTarget.classList.add('active');
 }
 
 // ============ 搜索功能 ============
 function handleSearch() {
   const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-  let tools = JSON.parse(localStorage.getItem(STORAGE_KEYS.TOOLS_LIST) || '[]');
-  
+
   if (!searchTerm) {
-    renderTools(tools);
+    renderIntegrate();
     return;
   }
-  
-  const filtered = tools.filter(tool => 
-    tool.title.toLowerCase().startsWith(searchTerm) ||
+
+  const filtered = allTools.filter(tool =>
+    tool.title.toLowerCase().includes(searchTerm) ||
     tool.description.toLowerCase().includes(searchTerm)
   );
-  
-  renderTools(filtered);
-}
 
-// ============ 打卡功能 ============
-let currentTask = null;
-let startTime = null;
+  const grid = document.getElementById('integrateGrid');
+  grid.innerHTML = '';
 
-const entriesEl = document.getElementById("entries");
-const noticeEl = document.getElementById("notice");
-const idleEl = document.getElementById("idleTime");
+  filtered.forEach(tool => {
+    const card = document.createElement('div');
+    card.className = 'tool-card';
+    card.onclick = () => openTool(tool);
 
-function showNotice(text, color = "lightgreen") {
-  noticeEl.textContent = text;
-  noticeEl.style.color = color;
-  setTimeout(() => {
-    noticeEl.textContent = "";
-  }, 2000);
-}
+    const gradientColor = adjustColor(tool.color, -20);
+    card.innerHTML = `
+      <div class="tool-icon" style="background: linear-gradient(135deg, ${tool.color} 0%, ${gradientColor} 100%);">
+        ${tool.icon}
+      </div>
+      <div class="tool-content">
+        <div class="tool-title">${tool.title}</div>
+        <div class="tool-description">${tool.description}</div>
+      </div>
+      <div class="tool-arrow">›</div>
+    `;
 
-function formatDuration(ms) {
-  let sec = Math.floor(ms / 1000);
-  let h = Math.floor(sec / 3600);
-  let m = Math.floor((sec % 3600) / 60);
-  let s = sec % 60;
-  return `${h}小時${m}分${s}秒`;
-}
-
-function loadEntries() {
-  const data = JSON.parse(localStorage.getItem(STORAGE_KEYS.TASK_ENTRIES) || "[]");
-  entriesEl.innerHTML = "";
-  
-  data.slice().reverse().forEach(entry => {
-    const li = document.createElement("li");
-    if (entry.end) {
-      li.innerHTML = `${entry.task}<br>　${entry.start} → ${entry.end} | ${entry.duration}`;
-    } else {
-      li.innerHTML = `${entry.task}<br>　${entry.start} → (進行中...)`;
-      currentTask = entry.task;
-      startTime = new Date(entry.startDate || entry.start);
-    }
-    entriesEl.appendChild(li);
+    grid.appendChild(card);
   });
-  
-  updateIdleTime();
 }
 
-function startTask() {
-  if (currentTask) {
-    showNotice("請先結束當前任務！", "red");
-    return;
-  }
-  
-  currentTask = document.getElementById("task").value;
-  startTime = new Date();
-  
-  let entries = JSON.parse(localStorage.getItem(STORAGE_KEYS.TASK_ENTRIES) || "[]");
-  entries.push({
-    task: currentTask,
-    start: startTime.toLocaleTimeString(),
-    startDate: startTime.toISOString(),
-    end: null,
-    duration: null,
-    ms: null
-  });
-  
-  localStorage.setItem(STORAGE_KEYS.TASK_ENTRIES, JSON.stringify(entries));
-  loadEntries();
-  showNotice(`▶️ 任務 "${currentTask}" 已開始`);
+// ============ 工具函數 ============
+function adjustColor(color, amount) {
+  const col = parseInt(color.slice(1), 16);
+  const r = Math.max(0, Math.min(255, (col >> 16) + amount));
+  const g = Math.max(0, Math.min(255, ((col >> 8) & 0xFF) + amount));
+  const b = Math.max(0, Math.min(255, (col & 0xFF) + amount));
+  return '#' + ((r << 16) | (g << 8) | b).toString(16).padStart(6, '0');
 }
 
-function endTask() {
-  if (!currentTask) {
-    showNotice("尚未開始任務！", "red");
-    return;
-  }
-  
-  const endTime = new Date();
-  const durationMs = endTime - startTime;
-  
-  let entries = JSON.parse(localStorage.getItem(STORAGE_KEYS.TASK_ENTRIES) || "[]");
-  let lastEntry = entries.slice().reverse().find(e => !e.end);
-  
-  if (lastEntry) {
-    lastEntry.end = endTime.toLocaleTimeString();
-    lastEntry.ms = durationMs;
-    lastEntry.duration = formatDuration(durationMs);
-    
-    localStorage.setItem(STORAGE_KEYS.TASK_ENTRIES, JSON.stringify(entries));
-    
-    currentTask = null;
-    startTime = null;
-    loadEntries();
-    showNotice(`⏹ 任務已結束 | 時長：${formatDuration(durationMs)}`);
-  } else {
-    showNotice("未找到進行中任務", "red");
-  }
-}
-
-function updateIdleTime() {
-  if (currentTask) {
-    idleEl.textContent = "";
-    return;
-  }
-  
-  const now = new Date();
-  const startOfDay = new Date();
-  startOfDay.setHours(0, 0, 0, 0);
-  
-  let idleMs = now - startOfDay;
-  
-  const data = JSON.parse(localStorage.getItem(STORAGE_KEYS.TASK_ENTRIES) || "[]");
-  data.forEach(entry => {
-    if (entry.ms) {
-      idleMs -= entry.ms;
-    }
-  });
-  
-  if (idleMs < 0) idleMs = 0;
-  idleEl.textContent = `⏳ 今日閒置時間：${formatDuration(idleMs)}`;
-}
-
-setInterval(updateIdleTime, 1000);
-
-// ============ 報表功能 ============
-function generateDailyReport() {
-  const data = JSON.parse(localStorage.getItem(STORAGE_KEYS.TASK_ENTRIES) || "[]");
-  
-  if (!data.length) {
-    alert("無紀錄");
-    return;
-  }
-  
-  const taskMap = {};
-  let totalSec = 0;
-  
-  data.forEach(entry => {
-    if (entry.ms) {
-      const task = entry.task;
-      const seconds = Math.floor(entry.ms / 1000);
-      taskMap[task] = (taskMap[task] || 0) + seconds;
-      totalSec += seconds;
-    }
-  });
-  
-  const idleSec = 24 * 3600 - totalSec;
-  
-  let html = "<table><tr><th>任務</th><th>累計時長</th></tr>";
-  
-  for (const task in taskMap) {
-    html += `<tr><td>${task}</td><td>${formatDuration(taskMap[task] * 1000)}</td></tr>`;
-  }
-  
-  html += `<tr><td><b>總時長</b></td><td>${formatDuration(totalSec * 1000)}</td></tr>`;
-  html += `<tr><td><b>閒置時間</b></td><td>${formatDuration(idleSec * 1000)}</td></tr>`;
-  html += "</table>";
-  
-  document.getElementById("reportOutput").innerHTML = html;
-  showNotice("✅ 今日報表已生成");
-}
-
-function copyReport() {
-  const el = document.getElementById("reportOutput");
-  if (!el.innerText) {
-    alert("無報表可複製");
-    return;
-  }
-  
-  navigator.clipboard.writeText(el.innerText)
-    .then(() => {
-      showNotice("✅ 報表已複製到剪貼簿");
-    })
-    .catch(() => {
-      showNotice("❌ 複製失敗", "red");
-    });
-}
-
-function clearAllData() {
-  if (confirm("確定要清空所有打卡紀錄嗎？此操作無法復原！")) {
-    localStorage.removeItem(STORAGE_KEYS.TASK_ENTRIES);
-    document.getElementById("status").textContent = "✅ 全部紀錄已清空";
-    setTimeout(() => {
-      location.reload();
-    }, 500);
-  }
-}
-
-// ============ 其他功能 ============
-function loadSettings() {
-  const settings = localStorage.getItem(STORAGE_KEYS.SETTINGS);
-  if (settings) {
-    console.log('設定已載入:', JSON.parse(settings));
-  }
-}
-
-function loadHistory() {
-  const history = localStorage.getItem(STORAGE_KEYS.HISTORY);
-  if (history) {
-    console.log('歷史已載入:', JSON.parse(history));
-  }
+function goBack() {
+  closeBottomSheet();
 }
 
 function toggleMenu() {
-  alert('選單功能\n\n可以在此添加：\n- 關於\n- 設定\n- 幫助\n- 反饋');
+  alert('選單功能\n\n可在此添加：\n- 設定\n- 幫助\n- 關於');
 }
 
 // ============ 初始化應用 ============
 window.addEventListener('DOMContentLoaded', () => {
   initApp();
-  loadEntries();
-});
-
-document.addEventListener('visibilitychange', () => {
-  if (!document.hidden) {
-    loadEntries();
-  }
 });
 </script>
 
