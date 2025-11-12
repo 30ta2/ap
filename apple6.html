@@ -1,1 +1,876 @@
-https://youtu.be/8cTWRlKwWKc?si=su08VZ64Tue8OUrU
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1a1a1a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>YouTube NonStop</title>
+    <link rel="manifest" href="data:application/json,{\"name\":\"YouTube NonStop\",\"short_name\":\"YT NonStop\",\"start_url\":\"./\",\"display\":\"fullscreen\",\"theme_color\":\"#1a1a1a\",\"background_color\":\"#121212\"}">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #0a0a0a;
+            color: #fff;
+            min-height: 100vh;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            padding: 12px;
+            gap: 12px;
+        }
+
+        /* 上部控制欄 */
+        .header {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.08);
+            padding: 12px;
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            flex-wrap: wrap;
+        }
+
+        .url-input {
+            flex: 1;
+            min-width: 200px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #fff;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .url-input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .url-input:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 107, 107, 0.5);
+        }
+
+        .btn {
+            padding: 10px 16px;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            border: none;
+            color: #fff;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        /* 影片播放器 */
+        .video-wrapper {
+            flex: 1;
+            background: #000;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+        }
+
+        .video-player {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        /* 歷史面板 */
+        .history-panel {
+            position: fixed;
+            top: 0;
+            right: -350px;
+            width: 350px;
+            height: 100vh;
+            background: rgba(10, 10, 10, 0.98);
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            transition: right 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .history-panel.active {
+            right: 0;
+        }
+
+        .history-header {
+            padding: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .history-header h3 {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .history-close {
+            background: none;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            font-size: 20px;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .history-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px;
+        }
+
+        .history-item {
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .history-item:hover {
+            background: rgba(255, 107, 107, 0.15);
+            border-color: rgba(255, 107, 107, 0.3);
+            transform: translateX(-4px);
+        }
+
+        .history-item-title {
+            font-weight: 600;
+            font-size: 13px;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            padding: 6px 10px;
+            border-radius: 4px;
+            display: inline-block;
+            width: fit-content;
+            max-width: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .history-item-time {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .history-empty {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.5);
+            padding: 24px 12px;
+            font-size: 13px;
+        }
+
+        .history-footer {
+            padding: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            gap: 8px;
+        }
+
+        .history-footer button {
+            flex: 1;
+            padding: 8px;
+            font-size: 12px;
+        }
+
+        /* 訊息提示 */
+        .message {
+            padding: 12px;
+            background: rgba(76, 175, 80, 0.15);
+            border: 1px solid rgba(76, 175, 80, 0.3);
+            color: #81c784;
+            border-radius: 6px;
+            font-size: 13px;
+            display: none;
+            animation: fadeIn 0.3s ease;
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            z-index: 500;
+        }
+
+        .message.error {
+            background: rgba(244, 67, 54, 0.15);
+            border-color: rgba(244, 67, 54, 0.3);
+            color: #ef5350;
+        }
+
+        /* PIP 按鈕 */
+        .pip-btn {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(255, 107, 107, 0.9);
+            border: none;
+            color: #fff;
+            padding: 10px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+
+        .video-wrapper:hover .pip-btn {
+            opacity: 1;
+        }
+
+        .pip-btn:hover {
+            background: rgba(255, 107, 107, 1);
+            transform: scale(1.05);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 107, 107, 0.5);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 107, 107, 0.7);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 8px;
+                gap: 8px;
+            }
+
+            .header {
+                gap: 6px;
+            }
+
+            .url-input {
+                min-width: 150px;
+            }
+
+            .btn {
+                padding: 8px 12px;
+                font-size: 12px;
+            }
+
+            .history-panel {
+                width: 280px;
+                right: -280px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 控制欄 -->
+        <div class="header">
+            <input type="text" id="urlInput" class="url-input" placeholder="輸入 YouTube 連結...">
+            <button class="btn" onclick="loadVideo()">播放</button>
+            <button class="btn btn-secondary" onclick="clearVideo()">清除</button>
+            <button class="btn btn-secondary" onclick="toggleHistory()">📋 歷史</button>
+        </div>
+
+        <!-- 播放器 -->
+        <div class="video-wrapper">
+            <video id="videoPlayer" class="video-player" controls allowfullscreen style="display:none;"></video>
+            <iframe id="videoIframe" class="video-player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            <button class="pip-btn" onclick="enterPIP()">📺 PIP</button>
+            <div id="message" class="message"></div>
+        </div>
+    </div>
+
+    <!-- 歷史面板 -->
+    <div id="historyPanel" class="history-panel">
+        <div class="history-header">
+            <h3>播放歷史</h3>
+            <button class="history-close" onclick="toggleHistory()">✕</button>
+        </div>
+        <div class="history-content" id="historyContent">
+            <div class="history-empty">還沒有播放記錄</div>
+        </div>
+        <div class="history-footer">
+            <button class="btn btn-secondary" onclick="clearAllHistory()">清空</button>
+            <button class="btn btn-secondary" onclick="exportHistory()">匯出</button>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // 標題提取和關鍵字偵測
+        // ==========================================
+        
+        function extractKeywordFromTitle(url) {
+            try {
+                const urlObj = new URL(url);
+                const title = urlObj.searchParams.get('title');
+                if (title) {
+                    return truncateTitle(title, 10);
+                }
+            } catch (e) {}
+            return 'YouTube 影片';
+        }
+
+        function truncateTitle(title, maxLength) {
+            if (!title) return 'YouTube 影片';
+            
+            let cleaned = title
+                .replace(/[-–—]/g, ' ')
+                .replace(/【|】|《|》|\(|\)|（|）/g, ' ')
+                .replace(/[|\\]/g, ' ')
+                .trim();
+
+            const words = cleaned.split(/[\s\-_。，、；：！？]/);
+            const stopWords = ['YouTube', 'Official', '官方', 'Video', '影片', 'Music', '音樂', 'MV', 'HD', '高清', 'Full', '完整'];
+            const filtered = words.filter(w => w.length > 1 && !stopWords.includes(w));
+
+            let result = filtered.slice(0, 2).join('');
+            
+            if (result.length === 0) {
+                result = cleaned.substring(0, maxLength);
+            } else if (result.length > maxLength) {
+                result = result.substring(0, maxLength);
+            }
+
+            return result || 'YouTube 影片';
+        }
+
+        // ==========================================
+        // 播放歷史管理
+        // ==========================================
+        let playHistory = [];
+        let titleDetectInterval = null;
+
+        function loadHistoryFromStorage() {
+            const saved = localStorage.getItem('youtubeHistory');
+            if (saved) {
+                playHistory = JSON.parse(saved);
+            }
+        }
+
+        function saveHistoryToStorage() {
+            localStorage.setItem('youtubeHistory', JSON.stringify(playHistory));
+        }
+
+        function addToHistory(videoId, url, title) {
+            const timestamp = new Date().toLocaleString('zh-TW');
+            
+            const exists = playHistory.some(item => item.videoId === videoId);
+            if (exists) {
+                playHistory = playHistory.filter(item => item.videoId !== videoId);
+            }
+
+            playHistory.unshift({
+                videoId: videoId,
+                url: url,
+                title: title,
+                timestamp: timestamp,
+                id: Date.now()
+            });
+
+            if (playHistory.length > 50) {
+                playHistory.pop();
+            }
+
+            saveHistoryToStorage();
+            renderHistory();
+        }
+
+        function renderHistory() {
+            const content = document.getElementById('historyContent');
+            
+            if (playHistory.length === 0) {
+                content.innerHTML = '<div class="history-empty">還沒有播放記錄</div>';
+                return;
+            }
+
+            content.innerHTML = playHistory.map((item, index) => `
+                <div class="history-item" onclick="playFromHistory(${index})">
+                    <div class="history-item-title">${item.title}</div>
+                    <div class="history-item-time">${item.timestamp}</div>
+                </div>
+            `).join('');
+        }
+
+        function playFromHistory(index) {
+            const item = playHistory[index];
+            document.getElementById('urlInput').value = item.url;
+            toggleHistory();
+            loadVideo();
+        }
+
+        function toggleHistory() {
+            const panel = document.getElementById('historyPanel');
+            panel.classList.toggle('active');
+        }
+
+        function clearAllHistory() {
+            if (confirm('確定要清空所有播放歷史嗎？')) {
+                playHistory = [];
+                saveHistoryToStorage();
+                renderHistory();
+                showMessage('✓ 播放歷史已清空');
+            }
+        }
+
+        function exportHistory() {
+            if (playHistory.length === 0) {
+                showMessage('播放歷史是空的', 'error');
+                return;
+            }
+
+            const text = playHistory.map((item, i) => 
+                `${i + 1}. [${item.timestamp}] ${item.title}\n${item.url}`
+            ).join('\n\n');
+
+            const blob = new Blob([text], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `youtube-history-${new Date().getTime()}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            showMessage('✓ 歷史已匯出');
+        }
+
+        // ==========================================
+        // Picture-in-Picture 功能 - 強化版
+        // ==========================================
+        async function enterPIP() {
+            try {
+                const iframe = document.getElementById('videoIframe');
+                
+                // 檢查是否已經在 PIP 中
+                if (document.pictureInPictureElement) {
+                    await document.exitPictureInPicture();
+                    showMessage('✓ 已退出 Picture-in-Picture');
+                    return;
+                }
+                
+                // 嘗試進入 PIP
+                if (iframe.requestPictureInPicture) {
+                    try {
+                        await iframe.requestPictureInPicture();
+                        showMessage('✓ 已進入 Picture-in-Picture 模式');
+                    } catch (pipError) {
+                        // PIP 失敗時的備用方案
+                        console.log('PIP 失敗:', pipError);
+                        showMessage('PIP 正在初始化...', 'error');
+                        
+                        // 延遲後重試
+                        setTimeout(async () => {
+                            try {
+                                if (document.pictureInPictureElement) {
+                                    return;
+                                }
+                                await iframe.requestPictureInPicture();
+                                showMessage('✓ 已進入 Picture-in-Picture 模式');
+                            } catch (e) {
+                                showMessage('PIP 不支持或被阻擋', 'error');
+                            }
+                        }, 500);
+                    }
+                } else {
+                    showMessage('瀏覽器不支持 PIP 功能', 'error');
+                }
+            } catch (error) {
+                console.log('PIP 錯誤:', error);
+                showMessage('PIP 功能異常：' + error.message, 'error');
+            }
+        }
+
+        // ==========================================
+        // 增強廣告阻擋 + YouTube NonStop 腳本
+        // ==========================================
+
+        let nonstopCheckInterval = null;
+        let adBlockerInterval = null;
+
+        const AD_BLOCKER_SCRIPT = `
+            (function() {
+                'use strict';
+                
+                // 激進廣告移除
+                const removeAds = () => {
+                    const selectors = [
+                        'ytd-ad-slot-renderer',
+                        'div[data-ad-slot-id]',
+                        'ytm-promoted-sparkles-web-renderer',
+                        '.ytp-ad-module',
+                        '.ytp-ad-player-overlay',
+                        '.ytp-ad-container',
+                        '.ytp-ads',
+                        'tp-yt-paper-dialog[aria-label*="advertisement"]',
+                        'ytd-promoted-video-renderer',
+                        'ytd-in-feed-ad-layout-renderer',
+                        '.video-ads',
+                        '[ad-label]',
+                        '.ad-showing',
+                        '.ytp-ad-text',
+                        '.ytp-ad-player-overlay-instream-info',
+                        'yt-formatted-string[aria-label*="Ad"]'
+                    ];
+                    
+                    selectors.forEach(selector => {
+                        try {
+                            document.querySelectorAll(selector).forEach(el => {
+                                el.style.display = 'none !important';
+                                el.style.visibility = 'hidden !important';
+                                el.style.pointerEvents = 'none !important';
+                                el.remove?.();
+                            });
+                        } catch(e) {}
+                    });
+
+                    // 移除廣告視頻元素
+                    const videos = document.querySelectorAll('video');
+                    videos.forEach(video => {
+                        if (video.duration && video.duration < 120) {
+                            try {
+                                const parent = video.closest('.ytp-ad-module, .ytp-ad-container, .ad-showing');
+                                if (parent) {
+                                    parent.remove?.();
+                                }
+                            } catch(e) {}
+                        }
+                    });
+                };
+
+                // 激進跳過廣告
+                const skipAds = () => {
+                    try {
+                        // 多個按鈕選擇器
+                        const skipSelectors = [
+                            '.ytp-ad-skip-button-modern',
+                            '.ytp-ad-skip-button',
+                            '[aria-label="Skip ad"]',
+                            '[aria-label="略過廣告"]',
+                            '[aria-label="跳過廣告"]',
+                            'button[aria-label*="Skip"]',
+                            '.ytp-skip-ad-button'
+                        ];
+
+                        skipSelectors.forEach(sel => {
+                            const btn = document.querySelector(sel);
+                            if (btn && btn.offsetParent !== null) {
+                                btn.click?.();
+                                btn.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+                            }
+                        });
+
+                        // 跳過廣告計時器點擊
+                        const countdown = document.querySelector('.ytp-ad-player-overlay-instream-info');
+                        if (countdown && countdown.textContent.includes('0:0')) {
+                            const skipBtn = document.querySelector('.ytp-ad-skip-button-modern');
+                            if (skipBtn) skipBtn.click?.();
+                        }
+                    } catch(e) {}
+                };
+
+                // 初始移除
+                removeAds();
+                skipAds();
+
+                // 持續監控
+                setInterval(() => {
+                    removeAds();
+                    skipAds();
+                }, 500);
+
+                // MutationObserver 監控 DOM 變化
+                const observer = new MutationObserver(() => {
+                    removeAds();
+                    skipAds();
+                });
+                
+                observer.observe(document.body, {
+                    childList: true,
+                    subtree: true,
+                    attributes: true,
+                    attributeFilter: ['class', 'style']
+                });
+
+                // 攔截廣告相關函數
+                try {
+                    window.ytInitialData = window.ytInitialData || {};
+                    window.ytInitialPlayerResponse = window.ytInitialPlayerResponse || {};
+                } catch(e) {}
+            })();
+        `;
+
+        const NONSTOP_SCRIPT = `
+            (function() {
+                'use strict';
+                
+                setInterval(() => {
+                    try {
+                        // 尋找並點擊「繼續觀看」按鈕
+                        const buttons = document.querySelectorAll('button, div[role="button"], yt-button-shape button');
+                        buttons.forEach(btn => {
+                            const ariaLabel = btn.getAttribute('aria-label') || '';
+                            const text = btn.textContent || '';
+                            const title = btn.getAttribute('title') || '';
+                            
+                            if (ariaLabel.toLowerCase().includes('continue') || 
+                                ariaLabel.includes('繼續') || 
+                                text.toLowerCase().includes('continue') || 
+                                text.includes('繼續') ||
+                                title.toLowerCase().includes('continue')) {
+                                if (btn.offsetParent !== null) {
+                                    btn.click?.();
+                                }
+                            }
+                        });
+                        
+                        // 防止播放暫停
+                        const playButton = document.querySelector('.ytp-play-button');
+                        const video = document.querySelector('video');
+                        
+                        if (video && video.paused) {
+                            video.play?.();
+                        }
+                        
+                    } catch(e) {}
+                }, 1500);
+            })();
+        `;
+
+        function extractYouTubeId(url) {
+            const patterns = [
+                /(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\n?#]+)/,
+                /youtube\.com\/embed\/([^&\n?#]+)/,
+                /youtube\.com\/v\/([^&\n?#]+)/
+            ];
+
+            for (const pattern of patterns) {
+                const match = url.match(pattern);
+                if (match && match[1]) {
+                    return match[1];
+                }
+            }
+            return null;
+        }
+
+        function injectScriptsToIframe() {
+            const iframe = document.getElementById('videoIframe');
+            try {
+                const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                
+                // 注入廣告阻擋
+                const adScript = iframeDoc.createElement('script');
+                adScript.textContent = AD_BLOCKER_SCRIPT;
+                adScript.type = 'text/javascript';
+                iframeDoc.body?.appendChild(adScript) || iframeDoc.documentElement?.appendChild(adScript);
+
+                // 注入 NonStop
+                const nonstopScript = iframeDoc.createElement('script');
+                nonstopScript.textContent = NONSTOP_SCRIPT;
+                nonstopScript.type = 'text/javascript';
+                iframeDoc.body?.appendChild(nonstopScript) || iframeDoc.documentElement?.appendChild(nonstopScript);
+
+                console.log('✓ 腳本注入成功');
+            } catch (e) {
+                console.log('⚠ iframe 跨域限制，使用替代方法');
+                startLocalAdBlocker();
+                startLocalNonstop();
+            }
+        }
+
+        function startLocalAdBlocker() {
+            if (adBlockerInterval) clearInterval(adBlockerInterval);
+            
+            adBlockerInterval = setInterval(() => {
+                try {
+                    const iframe = document.getElementById('videoIframe');
+                    const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                    if (!iframeDoc) return;
+                    
+                    const adSelectors = [
+                        '.ytp-ad-module',
+                        '.ytp-ad-player-overlay',
+                        '.video-ads',
+                        '[data-ad-slot-id]',
+                        '.ytp-ad-container'
+                    ];
+                    
+                    adSelectors.forEach(selector => {
+                        try {
+                            iframeDoc.querySelectorAll(selector).forEach(el => {
+                                el.style.display = 'none';
+                                el.style.visibility = 'hidden';
+                            });
+                        } catch(e) {}
+                    });
+
+                    // 點擊跳過廣告按鈕
+                    const skipBtn = iframeDoc.querySelector('.ytp-ad-skip-button-modern');
+                    if (skipBtn && skipBtn.offsetParent !== null) {
+                        skipBtn.click?.();
+                    }
+                } catch (e) {}
+            }, 800);
+        }
+
+        function startLocalNonstop() {
+            if (nonstopCheckInterval) clearInterval(nonstopCheckInterval);
+            
+            nonstopCheckInterval = setInterval(() => {
+                try {
+                    const iframe = document.getElementById('videoIframe');
+                    const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                    if (!iframeDoc) return;
+                    
+                    const buttons = iframeDoc.querySelectorAll('button, div[role="button"]');
+                    buttons.forEach(btn => {
+                        const label = btn.getAttribute('aria-label') || '';
+                        if (label.includes('Continue') || label.includes('繼續')) {
+                            if (btn.offsetParent !== null) {
+                                btn.click?.();
+                            }
+                        }
+                    });
+                } catch (e) {}
+            }, 1500);
+        }
+
+        function loadVideo() {
+            const url = document.getElementById('urlInput').value.trim();
+            
+            if (!url) {
+                showMessage('請輸入 YouTube 連結', 'error');
+                return;
+            }
+
+            const videoId = extractYouTubeId(url);
+            if (!videoId) {
+                showMessage('無效的 YouTube 連結', 'error');
+                return;
+            }
+
+            const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+            const iframe = document.getElementById('videoIframe');
+            iframe.src = embedUrl;
+            
+            setTimeout(injectScriptsToIframe, 2000);
+            
+            showMessage('✓ 影片載入中，廣告阻擋已啟動');
+            
+            const keyword = extractKeywordFromTitle(url);
+            addToHistory(videoId, url, keyword);
+        }
+
+        function clearVideo() {
+            const iframe = document.getElementById('videoIframe');
+            iframe.src = '';
+            document.getElementById('urlInput').value = '';
+            
+            if (nonstopCheckInterval) clearInterval(nonstopCheckInterval);
+            if (adBlockerInterval) clearInterval(adBlockerInterval);
+            if (titleDetectInterval) clearInterval(titleDetectInterval);
+            
+            showMessage('已清除');
+        }
+
+        function showMessage(text, type = 'success') {
+            const msg = document.getElementById('message');
+            msg.textContent = text;
+            msg.className = `message ${type}`;
+            msg.style.display = 'block';
+            
+            setTimeout(() => {
+                msg.style.display = 'none';
+            }, 3000);
+        }
+
+        document.getElementById('urlInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                loadVideo();
+            }
+        });
+
+        // Service Worker
+        if ('serviceWorker' in navigator) {
+            const swCode = `
+                const CACHE = 'yt-nonstop-v4';
+                self.addEventListener('install', e => {
+                    e.waitUntil(caches.open(CACHE).then(c => c.addAll(['./', './index.html']).catch(() => {})));
+                });
+                self.addEventListener('fetch', e => {
+                    if (e.request.method === 'GET') {
+                        e.respondWith(
+                            caches.match(e.request).then(r => r || fetch(e.request)).catch(() => fetch(e.request))
+                        );
+                    }
+                });
+            `;
+            
+            const blob = new Blob([swCode], { type: 'application/javascript' });
+            navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(() => {});
+        }
+
+        // 初始化
+        loadHistoryFromStorage();
+        renderHistory();
+    </script>
+</body>
+</html>
