@@ -2,12 +2,42 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#1a1a1a">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#0a0a0a">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>YouTube NonStop</title>
-    <link rel="manifest" href="data:application/json,{\"name\":\"YouTube NonStop\",\"short_name\":\"YT NonStop\",\"start_url\":\"./\",\"display\":\"fullscreen\",\"theme_color\":\"#1a1a1a\",\"background_color\":\"#121212\"}">
+    <meta name="apple-mobile-web-app-title" content="YT播放器">
+    <title>YT播放器</title>
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="data:application/json,{
+        \"name\": \"YouTube NonStop播放器\",
+        \"short_name\": \"YT播放器\",
+        \"start_url\": \"./\",
+        \"scope\": \"./\",
+        \"display\": \"standalone\",
+        \"orientation\": \"portrait-primary\",
+        \"theme_color\": \"#0a0a0a\",
+        \"background_color\": \"#0a0a0a\",
+        \"icons\": [
+            {
+                \"src\": \"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect fill='%23ff6b6b' width='192' height='192' rx='45'/%3E%3Cpath fill='white' d='M60 60h72v72H60z'/%3E%3Cpolygon fill='%23ff6b6b' points='75,65 120,92.5 75,120'/%3E%3C/svg%3E\",
+                \"sizes\": \"192x192\",
+                \"type\": \"image/svg+xml\",
+                \"purpose\": \"any\"
+            },
+            {
+                \"src\": \"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect fill='%23ff6b6b' width='512' height='512' rx='120'/%3E%3Cpath fill='white' d='M160 160h192v192H160z'/%3E%3Cpolygon fill='%23ff6b6b' points='200,170 320,245 200,320'/%3E%3C/svg%3E\",
+                \"sizes\": \"512x512\",
+                \"type\": \"image/svg+xml\",
+                \"purpose\": \"any\"
+            }
+        ]
+    }">
+    
+    <!-- Apple 特定設定 -->
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect fill='%23ff6b6b' width='180' height='180' rx='40'/%3E%3Cpath fill='white' d='M54 54h72v72H54z'/%3E%3Cpolygon fill='%23ff6b6b' points='69,59 114,86.5 69,114'/%3E%3C/svg%3E">
+    
     <style>
         * {
             margin: 0;
@@ -15,18 +45,28 @@
             box-sizing: border-box;
         }
 
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             background: #0a0a0a;
             color: #fff;
             min-height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
         }
 
         .container {
             display: flex;
             flex-direction: column;
             height: 100vh;
-            padding: 12px;
+            width: 100vw;
+            padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
             gap: 12px;
         }
 
@@ -41,6 +81,7 @@
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.1);
             flex-wrap: wrap;
+            flex-shrink: 0;
         }
 
         .url-input {
@@ -103,6 +144,7 @@
             overflow: hidden;
             border: 1px solid rgba(255, 255, 255, 0.1);
             position: relative;
+            display: flex;
         }
 
         .video-player {
@@ -115,8 +157,8 @@
         .history-panel {
             position: fixed;
             top: 0;
-            right: -350px;
-            width: 350px;
+            right: -100%;
+            width: min(350px, 100vw);
             height: 100vh;
             background: rgba(10, 10, 10, 0.98);
             border-left: 1px solid rgba(255, 255, 255, 0.1);
@@ -125,6 +167,7 @@
             z-index: 1000;
             display: flex;
             flex-direction: column;
+            padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) 12px;
         }
 
         .history-panel.active {
@@ -132,11 +175,13 @@
         }
 
         .history-header {
-            padding: 16px;
+            padding: 12px 0;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 12px;
+            flex-shrink: 0;
         }
 
         .history-header h3 {
@@ -161,15 +206,18 @@
         .history-content {
             flex: 1;
             overflow-y: auto;
-            padding: 12px;
+            padding: 12px 0;
+            margin: 0 -12px;
+            padding-left: 12px;
+            padding-right: 12px;
         }
 
         .history-item {
             padding: 12px;
             background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 6px;
-            margin-bottom: 8px;
+            border: 2px solid rgba(255, 107, 107, 0.3);
+            border-radius: 8px;
+            margin-bottom: 10px;
             cursor: pointer;
             transition: all 0.3s ease;
             display: flex;
@@ -179,7 +227,7 @@
 
         .history-item:hover {
             background: rgba(255, 107, 107, 0.15);
-            border-color: rgba(255, 107, 107, 0.3);
+            border-color: rgba(255, 107, 107, 0.6);
             transform: translateX(-4px);
         }
 
@@ -187,14 +235,17 @@
             font-weight: 600;
             font-size: 13px;
             background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
-            padding: 6px 10px;
-            border-radius: 4px;
-            display: inline-block;
-            width: fit-content;
-            max-width: 100%;
-            white-space: nowrap;
+            padding: 8px 12px;
+            border-radius: 6px;
+            display: block;
+            width: 100%;
+            word-wrap: break-word;
+            line-height: 1.5;
+            max-height: 72px;
             overflow: hidden;
-            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
         }
 
         .history-item-time {
@@ -210,10 +261,11 @@
         }
 
         .history-footer {
-            padding: 12px;
+            padding: 12px 0;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
             display: flex;
             gap: 8px;
+            flex-shrink: 0;
         }
 
         .history-footer button {
@@ -294,18 +346,25 @@
             background: rgba(255, 107, 107, 0.7);
         }
 
+        /* 防止瀏覽器預設行為 */
+        input, button {
+            -webkit-appearance: none;
+            -webkit-touch-callout: none;
+        }
+
         @media (max-width: 768px) {
             .container {
-                padding: 8px;
+                padding: max(8px, env(safe-area-inset-top)) max(8px, env(safe-area-inset-right)) max(8px, env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left));
                 gap: 8px;
             }
 
             .header {
                 gap: 6px;
+                padding: 8px;
             }
 
             .url-input {
-                min-width: 150px;
+                min-width: 120px;
             }
 
             .btn {
@@ -314,8 +373,7 @@
             }
 
             .history-panel {
-                width: 280px;
-                right: -280px;
+                width: 100vw;
             }
         }
     </style>
@@ -332,7 +390,6 @@
 
         <!-- 播放器 -->
         <div class="video-wrapper">
-            <video id="videoPlayer" class="video-player" controls allowfullscreen style="display:none;"></video>
             <iframe id="videoIframe" class="video-player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
             <button class="pip-btn" onclick="enterPIP()">📺 PIP</button>
             <div id="message" class="message"></div>
@@ -356,49 +413,79 @@
 
     <script>
         // ==========================================
-        // 標題提取和關鍵字偵測
+        // YouTube 標題提取 - 完整版本
         // ==========================================
         
-        function extractKeywordFromTitle(url) {
+        async function fetchYouTubeTitle(videoId) {
             try {
-                const urlObj = new URL(url);
-                const title = urlObj.searchParams.get('title');
-                if (title) {
-                    return truncateTitle(title, 10);
+                // 使用 oEmbed API 獲取完整標題
+                const response = await fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`);
+                if (response.ok) {
+                    const data = await response.json();
+                    const title = data.title || '';
+                    return cleanAndExtractTitle(title);
                 }
-            } catch (e) {}
+            } catch (e) {
+                console.log('oEmbed 失敗');
+            }
+
+            try {
+                // 備用方案
+                const response = await fetch(`https://noembed.com/embed?url=https://www.youtube.com/watch?v=${videoId}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    const title = data.title || '';
+                    return cleanAndExtractTitle(title);
+                }
+            } catch (e) {
+                console.log('noembed 失敗');
+            }
+
             return 'YouTube 影片';
         }
 
-        function truncateTitle(title, maxLength) {
-            if (!title) return 'YouTube 影片';
+        function cleanAndExtractTitle(fullTitle) {
+            if (!fullTitle) return 'YouTube 影片';
             
-            let cleaned = title
-                .replace(/[-–—]/g, ' ')
-                .replace(/【|】|《|》|\(|\)|（|）/g, ' ')
-                .replace(/[|\\]/g, ' ')
+            // 移除 "- YouTube" 和相似後綴
+            let cleaned = fullTitle
+                .replace(/\s*[-–—]\s*YouTube\s*$/i, '')
+                .replace(/\s*\|\s*YouTube\s*$/i, '')
+                .replace(/【|】|《|》/g, '')
                 .trim();
 
-            const words = cleaned.split(/[\s\-_。，、；：！？]/);
-            const stopWords = ['YouTube', 'Official', '官方', 'Video', '影片', 'Music', '音樂', 'MV', 'HD', '高清', 'Full', '完整'];
-            const filtered = words.filter(w => w.length > 1 && !stopWords.includes(w));
-
-            let result = filtered.slice(0, 2).join('');
-            
-            if (result.length === 0) {
-                result = cleaned.substring(0, maxLength);
-            } else if (result.length > maxLength) {
-                result = result.substring(0, maxLength);
+            // 如果已經很簡潔且有意義，直接返回
+            if (cleaned.length <= 30) {
+                return cleaned;
             }
 
-            return result || 'YouTube 影片';
+            // 嘗試識別「歌手 - 歌名」或「歌名 - 歌手」格式
+            const dashMatch = cleaned.match(/([^-\|]+)\s*[-–—\|]\s*([^-\|]+)/);
+            if (dashMatch) {
+                const part1 = dashMatch[1].trim();
+                const part2 = dashMatch[2].trim();
+                
+                // 組合兩部分，不限長度
+                const combined = (part1 + part2).trim();
+                
+                // 如果組合後不超過框的顯示限制（約80字），就完整保留
+                if (combined.length <= 80) {
+                    return combined;
+                } else {
+                    // 否則組合前 2 個部分
+                    return (part1 + ' ' + part2).trim().substring(0, 80);
+                }
+            }
+
+            // 沒有分隔符的情況，直接返回清潔後的標題
+            return cleaned.substring(0, 80);
         }
 
         // ==========================================
         // 播放歷史管理
         // ==========================================
         let playHistory = [];
-        let titleDetectInterval = null;
+        let adBlockerInterval = null;
 
         function loadHistoryFromStorage() {
             const saved = localStorage.getItem('youtubeHistory');
@@ -411,8 +498,15 @@
             localStorage.setItem('youtubeHistory', JSON.stringify(playHistory));
         }
 
-        function addToHistory(videoId, url, title) {
+        async function addToHistory(videoId, url, title) {
             const timestamp = new Date().toLocaleString('zh-TW');
+            
+            // 如果標題是預設的，嘗試從 API 獲取
+            if (title === 'YouTube 影片') {
+                showMessage('正在獲取標題...');
+                const realTitle = await fetchYouTubeTitle(videoId);
+                title = realTitle;
+            }
             
             const exists = playHistory.some(item => item.videoId === videoId);
             if (exists) {
@@ -494,30 +588,25 @@
         }
 
         // ==========================================
-        // Picture-in-Picture 功能 - 強化版
+        // Picture-in-Picture 功能
         // ==========================================
         async function enterPIP() {
             try {
                 const iframe = document.getElementById('videoIframe');
                 
-                // 檢查是否已經在 PIP 中
                 if (document.pictureInPictureElement) {
                     await document.exitPictureInPicture();
                     showMessage('✓ 已退出 Picture-in-Picture');
                     return;
                 }
                 
-                // 嘗試進入 PIP
                 if (iframe.requestPictureInPicture) {
                     try {
                         await iframe.requestPictureInPicture();
                         showMessage('✓ 已進入 Picture-in-Picture 模式');
                     } catch (pipError) {
-                        // PIP 失敗時的備用方案
-                        console.log('PIP 失敗:', pipError);
                         showMessage('PIP 正在初始化...', 'error');
                         
-                        // 延遲後重試
                         setTimeout(async () => {
                             try {
                                 if (document.pictureInPictureElement) {
@@ -534,23 +623,20 @@
                     showMessage('瀏覽器不支持 PIP 功能', 'error');
                 }
             } catch (error) {
-                console.log('PIP 錯誤:', error);
-                showMessage('PIP 功能異常：' + error.message, 'error');
+                showMessage('PIP 功能異常', 'error');
             }
         }
 
         // ==========================================
-        // 增強廣告阻擋 + YouTube NonStop 腳本
+        // 廣告阻擋 + NonStop 腳本 - 增強版
         // ==========================================
 
         let nonstopCheckInterval = null;
-        let adBlockerInterval = null;
 
         const AD_BLOCKER_SCRIPT = `
             (function() {
                 'use strict';
                 
-                // 激進廣告移除
                 const removeAds = () => {
                     const selectors = [
                         'ytd-ad-slot-renderer',
@@ -568,7 +654,10 @@
                         '.ad-showing',
                         '.ytp-ad-text',
                         '.ytp-ad-player-overlay-instream-info',
-                        'yt-formatted-string[aria-label*="Ad"]'
+                        'yt-formatted-string[aria-label*="Ad"]',
+                        '.ytp-branded-content-overlay',
+                        'div[aria-label*="廣告"]',
+                        'div[aria-label*="Advertisement"]'
                     ];
                     
                     selectors.forEach(selector => {
@@ -582,24 +671,24 @@
                         } catch(e) {}
                     });
 
-                    // 移除廣告視頻元素
-                    const videos = document.querySelectorAll('video');
-                    videos.forEach(video => {
-                        if (video.duration && video.duration < 120) {
-                            try {
-                                const parent = video.closest('.ytp-ad-module, .ytp-ad-container, .ad-showing');
-                                if (parent) {
-                                    parent.remove?.();
-                                }
-                            } catch(e) {}
-                        }
-                    });
+                    // 移除廣告視頻
+                    try {
+                        const videos = document.querySelectorAll('video');
+                        videos.forEach(video => {
+                            if (video.duration && video.duration < 120 && video.duration > 0) {
+                                try {
+                                    const parent = video.closest('[class*="ad"], [class*="Ad"]');
+                                    if (parent) {
+                                        parent.remove?.();
+                                    }
+                                } catch(e) {}
+                            }
+                        });
+                    } catch(e) {}
                 };
 
-                // 激進跳過廣告
                 const skipAds = () => {
                     try {
-                        // 多個按鈕選擇器
                         const skipSelectors = [
                             '.ytp-ad-skip-button-modern',
                             '.ytp-ad-skip-button',
@@ -607,37 +696,35 @@
                             '[aria-label="略過廣告"]',
                             '[aria-label="跳過廣告"]',
                             'button[aria-label*="Skip"]',
-                            '.ytp-skip-ad-button'
+                            '.ytp-skip-ad-button',
+                            'yt-button-shape[aria-label*="skip"]',
+                            'button[aria-label*="skip"]'
                         ];
 
                         skipSelectors.forEach(sel => {
-                            const btn = document.querySelector(sel);
-                            if (btn && btn.offsetParent !== null) {
-                                btn.click?.();
-                                btn.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-                            }
+                            try {
+                                const btn = document.querySelector(sel);
+                                if (btn && btn.offsetParent !== null) {
+                                    btn.click?.();
+                                    btn.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+                                    btn.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+                                }
+                            } catch(e) {}
                         });
-
-                        // 跳過廣告計時器點擊
-                        const countdown = document.querySelector('.ytp-ad-player-overlay-instream-info');
-                        if (countdown && countdown.textContent.includes('0:0')) {
-                            const skipBtn = document.querySelector('.ytp-ad-skip-button-modern');
-                            if (skipBtn) skipBtn.click?.();
-                        }
                     } catch(e) {}
                 };
 
-                // 初始移除
+                // 初始執行
                 removeAds();
                 skipAds();
 
                 // 持續監控
-                setInterval(() => {
+                const interval = setInterval(() => {
                     removeAds();
                     skipAds();
-                }, 500);
+                }, 300);
 
-                // MutationObserver 監控 DOM 變化
+                // MutationObserver
                 const observer = new MutationObserver(() => {
                     removeAds();
                     skipAds();
@@ -647,14 +734,8 @@
                     childList: true,
                     subtree: true,
                     attributes: true,
-                    attributeFilter: ['class', 'style']
+                    attributeFilter: ['class', 'style', 'aria-label']
                 });
-
-                // 攔截廣告相關函數
-                try {
-                    window.ytInitialData = window.ytInitialData || {};
-                    window.ytInitialPlayerResponse = window.ytInitialPlayerResponse || {};
-                } catch(e) {}
             })();
         `;
 
@@ -664,7 +745,6 @@
                 
                 setInterval(() => {
                     try {
-                        // 尋找並點擊「繼續觀看」按鈕
                         const buttons = document.querySelectorAll('button, div[role="button"], yt-button-shape button');
                         buttons.forEach(btn => {
                             const ariaLabel = btn.getAttribute('aria-label') || '';
@@ -682,14 +762,10 @@
                             }
                         });
                         
-                        // 防止播放暫停
-                        const playButton = document.querySelector('.ytp-play-button');
                         const video = document.querySelector('video');
-                        
                         if (video && video.paused) {
                             video.play?.();
                         }
-                        
                     } catch(e) {}
                 }, 1500);
             })();
@@ -716,21 +792,24 @@
             try {
                 const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
                 
-                // 注入廣告阻擋
+                // 清除之前的腳本
+                if (adBlockerInterval) clearInterval(adBlockerInterval);
+
+                // 注入廣告阻擋腳本
                 const adScript = iframeDoc.createElement('script');
                 adScript.textContent = AD_BLOCKER_SCRIPT;
                 adScript.type = 'text/javascript';
-                iframeDoc.body?.appendChild(adScript) || iframeDoc.documentElement?.appendChild(adScript);
+                iframeDoc.head?.appendChild(adScript);
 
-                // 注入 NonStop
+                // 注入 NonStop 腳本
                 const nonstopScript = iframeDoc.createElement('script');
                 nonstopScript.textContent = NONSTOP_SCRIPT;
                 nonstopScript.type = 'text/javascript';
-                iframeDoc.body?.appendChild(nonstopScript) || iframeDoc.documentElement?.appendChild(nonstopScript);
+                iframeDoc.head?.appendChild(nonstopScript);
 
                 console.log('✓ 腳本注入成功');
             } catch (e) {
-                console.log('⚠ iframe 跨域限制，使用替代方法');
+                console.log('⚠ iframe 跨域限制');
                 startLocalAdBlocker();
                 startLocalNonstop();
             }
@@ -750,25 +829,28 @@
                         '.ytp-ad-player-overlay',
                         '.video-ads',
                         '[data-ad-slot-id]',
-                        '.ytp-ad-container'
+                        '.ytp-ad-container',
+                        '[class*="ad-showing"]'
                     ];
                     
                     adSelectors.forEach(selector => {
                         try {
                             iframeDoc.querySelectorAll(selector).forEach(el => {
-                                el.style.display = 'none';
-                                el.style.visibility = 'hidden';
+                                el.style.display = 'none !important';
+                                el.style.visibility = 'hidden !important';
                             });
                         } catch(e) {}
                     });
 
-                    // 點擊跳過廣告按鈕
-                    const skipBtn = iframeDoc.querySelector('.ytp-ad-skip-button-modern');
-                    if (skipBtn && skipBtn.offsetParent !== null) {
-                        skipBtn.click?.();
-                    }
+                    // 持續跳過廣告
+                    const skipBtns = iframeDoc.querySelectorAll('.ytp-ad-skip-button-modern');
+                    skipBtns.forEach(btn => {
+                        if (btn && btn.offsetParent !== null) {
+                            btn.click?.();
+                        }
+                    });
                 } catch (e) {}
-            }, 800);
+            }, 500);
         }
 
         function startLocalNonstop() {
@@ -793,7 +875,7 @@
             }, 1500);
         }
 
-        function loadVideo() {
+        async function loadVideo() {
             const url = document.getElementById('urlInput').value.trim();
             
             if (!url) {
@@ -813,10 +895,9 @@
             
             setTimeout(injectScriptsToIframe, 2000);
             
-            showMessage('✓ 影片載入中，廣告阻擋已啟動');
+            showMessage('✓ 影片載入中，正在獲取標題...');
             
-            const keyword = extractKeywordFromTitle(url);
-            addToHistory(videoId, url, keyword);
+            addToHistory(videoId, url, 'YouTube 影片');
         }
 
         function clearVideo() {
@@ -826,7 +907,6 @@
             
             if (nonstopCheckInterval) clearInterval(nonstopCheckInterval);
             if (adBlockerInterval) clearInterval(adBlockerInterval);
-            if (titleDetectInterval) clearInterval(titleDetectInterval);
             
             showMessage('已清除');
         }
@@ -848,10 +928,17 @@
             }
         });
 
+        // 防止縮放
+        document.addEventListener('touchmove', function(event) {
+            if (event.scale !== 1) {
+                event.preventDefault();
+            }
+        }, { passive: false });
+
         // Service Worker
         if ('serviceWorker' in navigator) {
             const swCode = `
-                const CACHE = 'yt-nonstop-v4';
+                const CACHE = 'yt-player-v2';
                 self.addEventListener('install', e => {
                     e.waitUntil(caches.open(CACHE).then(c => c.addAll(['./', './index.html']).catch(() => {})));
                 });
