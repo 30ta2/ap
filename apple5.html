@@ -268,6 +268,252 @@
       color: #ccc;
       font-size: 13px;
     }
+
+    /* ========== Bottom Sheet 樣式 ========== */
+    .bottom-sheet-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 999;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+    }
+
+    .bottom-sheet-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .bottom-sheet {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: #1a1a1a;
+      z-index: 1000;
+      width: 100%;
+      height: 100%;
+      max-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      transform: translateY(100%);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      touch-action: none;
+    }
+
+    .bottom-sheet.active {
+      transform: translateY(0);
+    }
+
+    .bottom-sheet-handle {
+      width: 40px;
+      height: 4px;
+      background: #444444;
+      border-radius: 2px;
+      margin: 12px auto;
+      cursor: grab;
+    }
+
+    .bottom-sheet-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 16px 16px;
+      border-bottom: 1px solid #3a3a3a;
+      flex-shrink: 0;
+    }
+
+    .bottom-sheet-title {
+      color: #ffffff;
+      font-size: 19px;
+      font-weight: 600;
+    }
+
+    .bottom-sheet-close {
+      font-size: 24px;
+      cursor: pointer;
+      color: #808080;
+    }
+
+    .bottom-sheet-content {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      padding: 16px;
+      width: 100%;
+      position: relative;
+    }
+
+    .bottom-sheet-content iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      border-radius: 10px;
+    }
+
+    /* 源碼內容樣式 */
+    .source-code-container {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      background: #111;
+      color: #fff;
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    .source-code-main {
+      width: 100%;
+      max-width: 420px;
+      padding: 0 2vw;
+      box-sizing: border-box;
+      flex: 1;
+      overflow-y: auto;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .source-code-main h1 {
+      font-size: 1.3em;
+      margin: 24px 0 12px 0;
+      text-align: center;
+    }
+
+    .source-code-main .input-box {
+      margin-top: 6px;
+    }
+
+    .source-code-main .input-field {
+      width: 100%;
+      padding: 11px;
+      border-radius: 8px;
+      border: none;
+      font-size: 1em;
+      background: #222;
+      color: #fff;
+      box-sizing: border-box;
+    }
+
+    .source-code-main .btn-group {
+      display: flex;
+      gap: 8px;
+      margin-top: 13px;
+    }
+
+    .source-code-main .btn-primary {
+      flex: 1;
+      display: block;
+      background: #0792ff;
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      font-weight: bold;
+      font-size: 1.1em;
+      line-height: 42px;
+      transition: filter .13s;
+      cursor: pointer;
+    }
+
+    .source-code-main .btn-primary:active {
+      filter: brightness(0.9);
+    }
+
+    .source-code-main .btn-secondary {
+      flex: 1;
+      display: block;
+      background: #444;
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      font-weight: bold;
+      font-size: 1.1em;
+      line-height: 42px;
+      transition: filter .13s;
+      cursor: pointer;
+    }
+
+    .source-code-main .btn-secondary:active {
+      filter: brightness(0.8);
+    }
+
+    .source-code-main .section-title {
+      font-size: 1em;
+      margin: 22px 0 3px 0;
+      display: flex;
+      align-items: center;
+    }
+
+    .source-code-main .ico-btn {
+      background: none;
+      border: none;
+      padding: 0;
+      margin-left: 6px;
+      cursor: pointer;
+    }
+
+    .source-code-main .ico-btn:active svg {
+      filter: brightness(.7);
+    }
+
+    .source-code-main .result-box {
+      min-height: 150px;
+      background: #191919;
+      border-radius: 9px;
+      color: #f8f8f8;
+      padding: 12px;
+      font-size: 0.98em;
+      word-break: break-all;
+      overflow: auto;
+      box-sizing: border-box;
+    }
+
+    .source-code-main .copied-tip {
+      position: absolute;
+      right: 9vw;
+      top: 6px;
+      font-size: 0.92em;
+      padding: 3px 12px;
+      background: #222;
+      border-radius: 4px;
+      color: #4ec993;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .18s;
+    }
+
+    .source-code-main .copied-tip.show {
+      opacity: 0.97;
+    }
+
+    /* ========== 複製反饋提示 ========== */
+    .copy-feedback {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #222;
+      color: #4ec993;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 14px;
+      z-index: 10001;
+      pointer-events: none;
+      animation: fadeInOut 1.5s ease-in-out;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    @keyframes fadeInOut {
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+      10% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+      90% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+      100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+    }
   </style>
 </head>
 <body>
@@ -286,6 +532,7 @@
       <div class="func-bar">
         <button class="pin-btn" id="pinBtn">📍</button>
         <div class="func-btn-group">
+          <button class="func-btn" id="sourceCodeBtn">源碼</button>
           <button class="func-btn" id="pasteBtn">貼上</button>
           <button class="func-btn" id="copyBtn">複製</button>
           <button class="func-btn" id="clearBtn">清空</button>
@@ -320,6 +567,17 @@
     </div>
   </div>
 
+  <!-- Bottom Sheet 容器 -->
+  <div class="bottom-sheet-overlay" id="bottomSheetOverlay" onclick="closeBottomSheet()"></div>
+  <div class="bottom-sheet" id="bottomSheet">
+    <div class="bottom-sheet-handle"></div>
+    <div class="bottom-sheet-header">
+      <div class="bottom-sheet-title" id="sheetTitle">工具</div>
+      <div class="bottom-sheet-close" onclick="closeBottomSheet()">✕</div>
+    </div>
+    <div class="bottom-sheet-content" id="sheetContent"></div>
+  </div>
+
   <script>
     // ========== DOM 元素 ==========
     const codeInput = document.getElementById('codeInput');
@@ -327,10 +585,168 @@
     const pinBtn = document.getElementById('pinBtn');
     const mainArea = document.getElementById('mainArea');
     const historyList = document.getElementById('historyList');
+    const sourceCodeBtn = document.getElementById('sourceCodeBtn');
 
     let currentTab = 0;
     let isPinned = false;
     let touchStartX = 0;
+
+    // ========== Bottom Sheet 全局變數 ============
+    let sheetStartY = 0;
+    let sheetCurrentY = 0;
+
+    // ========== Bottom Sheet 核心函數 ============
+    function openBottomSheet(title, content) {
+      document.getElementById('sheetTitle').textContent = title;
+      document.getElementById('sheetContent').innerHTML = content;
+      document.getElementById('bottomSheet').classList.add('active');
+      document.getElementById('bottomSheetOverlay').classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeBottomSheet() {
+      document.getElementById('bottomSheet').classList.remove('active');
+      document.getElementById('bottomSheetOverlay').classList.remove('active');
+      document.body.style.overflow = 'auto';
+    }
+
+    function setupBottomSheetGestures() {
+      const sheet = document.getElementById('bottomSheet');
+      const handle = document.querySelector('.bottom-sheet-handle');
+      
+      if (!handle) return;
+
+      handle.addEventListener('touchstart', (e) => {
+        sheetStartY = e.touches[0].clientY;
+      });
+
+      handle.addEventListener('touchmove', (e) => {
+        sheetCurrentY = e.touches[0].clientY - sheetStartY;
+        if (sheetCurrentY > 0) {
+          sheet.style.transform = `translateY(${sheetCurrentY}px)`;
+        }
+      });
+
+      handle.addEventListener('touchend', () => {
+        if (sheetCurrentY > 100) {
+          closeBottomSheet();
+        } else {
+          sheet.style.transform = 'translateY(0)';
+        }
+        sheetStartY = 0;
+        sheetCurrentY = 0;
+      });
+    }
+
+    // ========== 複製反饋函數 ==========
+    function showCopyFeedback(message, targetElement = null) {
+      const feedback = document.createElement('div');
+      feedback.className = 'copy-feedback';
+      feedback.textContent = message;
+      
+      if (targetElement) {
+        targetElement.appendChild(feedback);
+      } else {
+        document.body.appendChild(feedback);
+      }
+      
+      setTimeout(() => {
+        feedback.remove();
+      }, 1500);
+    }
+
+    // ========== 源碼功能 ==========
+    sourceCodeBtn.onclick = function() {
+      const sourceCodeContent = `
+        <div class="source-code-container">
+          <div class="source-code-main">
+            <h1>查看網頁原始碼</h1>
+            <div class="input-box">
+              <input id="sourceUrlInput" class="input-field" placeholder="請輸入需要檢視的網頁連結..." autocomplete="off" spellcheck="false" oninput="localSaveUrl(this.value)">
+              <div class="btn-group">
+                <button class="btn-primary" id="sourceFetchBtn" onclick="sourceCodeFetchSourceCode()">提交</button>
+                <button class="btn-secondary" onclick="sourceCodePasteUrl()">貼上</button>
+                <button class="btn-secondary" onclick="sourceCodeClearUrl()">清除</button>
+              </div>
+            </div>
+            <div class="section-title" style="margin-top:18px;">
+              結果
+              <button class="ico-btn" title="複製" id="sourceCopyBtn" onclick="sourceCodeCopyResult()">
+                <svg height="21" viewBox="0 0 20 20" width="21" xmlns="http://www.w3.org/2000/svg"><path fill="#58a2fd" d="M8 4V1H3a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h2v-2H3V3h5zm3-3v2h4.01v14H11v2h4.01A1.99 1.99 0 0 0 17 17V3c0-1.1-.89-2-1.99-2H11zm-1 4H7c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h4c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 12H7V7h4v10z"/>
+                </svg>
+              </button>
+              <span class="copied-tip" id="sourceCopiedTip">已複製！</span>
+            </div>
+            <div class="result-box" id="sourceResult" tabindex="0"></div>
+          </div>
+        </div>
+      `;
+      openBottomSheet('查看網頁原始碼', sourceCodeContent);
+      
+      // 載入儲存的網址
+      setTimeout(() => {
+        const savedUrl = localStorage.getItem("last_url") || "";
+        const urlInput = document.getElementById('sourceUrlInput');
+        if (urlInput && savedUrl) {
+          urlInput.value = savedUrl;
+        }
+      }, 100);
+    };
+
+    // 源碼功能相關函數
+    window.localSaveUrl = function(url) {
+      localStorage.setItem("last_url", url);
+    };
+
+    window.sourceCodeFetchSourceCode = function() {
+      const url = document.getElementById('sourceUrlInput').value.trim();
+      const resBox = document.getElementById('sourceResult');
+      resBox.textContent = '';
+      if(!url.match(/^https?:\/\//)) {
+        resBox.textContent = '請輸入合法 http(s) 網址。';
+        return;
+      }
+      resBox.textContent = '載入中...';
+      fetch(url)
+        .then(resp => resp.text())
+        .then(html => {
+          resBox.textContent = html || '（沒有內容）';
+          localSaveUrl(url);
+        })
+        .catch(e=>{
+          resBox.textContent = '取得失敗：無法存取網址或跨域限制 ('+e+').';
+        });
+    };
+
+    window.sourceCodePasteUrl = function() {
+      navigator.clipboard.readText().then(text => {
+        document.getElementById('sourceUrlInput').value = text.trim();
+        localSaveUrl(text.trim());
+      }).catch(e => {
+        alert('無法讀取剪貼簿：' + e);
+      });
+    };
+
+    window.sourceCodeClearUrl = function() {
+      document.getElementById('sourceUrlInput').value = '';
+      localStorage.removeItem("last_url");
+    };
+
+    window.sourceCodeCopyResult = function() {
+      const resBox = document.getElementById('sourceResult');
+      if(!resBox.textContent) return;
+      navigator.clipboard.writeText(resBox.textContent).then(()=>{
+        const sourceCodeMain = document.querySelector('.source-code-main');
+        if (sourceCodeMain) {
+          showCopyFeedback('已複製！', sourceCodeMain);
+        }
+      }).catch(() => {
+        const sourceCodeMain = document.querySelector('.source-code-main');
+        if (sourceCodeMain) {
+          showCopyFeedback('複製失敗', sourceCodeMain);
+        }
+      });
+    };
 
     // ========== Tab 點擊切換 ==========
     document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -426,9 +842,9 @@
     document.getElementById('copyBtn').onclick = async function() {
       try {
         await navigator.clipboard.writeText(codeInput.value);
-        alert('已複製');
+        showCopyFeedback('已複製！');
       } catch (e) {
-        alert('複製失敗');
+        showCopyFeedback('複製失敗');
       }
     };
 
@@ -519,6 +935,11 @@
 
     // 初始載入歷史
     renderHistory();
+
+    // ========== 初始化 Bottom Sheet ============
+    window.addEventListener('DOMContentLoaded', () => {
+      setupBottomSheetGestures();
+    });
   </script>
 </body>
 </html>
