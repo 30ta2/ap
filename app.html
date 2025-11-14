@@ -2,1073 +2,394 @@
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="整合工具">
-<title>整合工具</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>工具代碼生成器</title>
 <style>
-/* CSS 設計系統 */
-:root {
-  --color-bg-primary: #1a1a1a;
-  --color-bg-secondary: #242424;
-  --color-bg-tertiary: #2a2a2a;
-  --color-bg-card: #2f2f2f;
-  --color-border: #3a3a3a;
-  --color-border-light: #444444;
-  --color-text-primary: #ffffff;
-  --color-text-secondary: #b0b0b0;
-  --color-text-tertiary: #808080;
-  
-  --spacing-xs: 4px;
-  --spacing-sm: 6px;
-  --spacing-md: 10px;
-  --spacing-lg: 12px;
-  --spacing-xl: 16px;
-  --spacing-2xl: 20px;
-  
-  --font-size-xs: 11px;
-  --font-size-sm: 13px;
-  --font-size-base: 15px;
-  --font-size-md: 17px;
-  --font-size-lg: 19px;
-  
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 14px;
-  --radius-xl: 16px;
-}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #1a1a1a; color: #fff; padding: 20px; min-height: 100vh; }
+.container { max-width: 500px; margin: 0 auto; }
+h1 { margin-bottom: 25px; text-align: center; font-size: 20px; color: #82B1FF; }
+.form-section { background: #242424; border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+.form-group { margin-bottom: 15px; }
+label { display: block; font-size: 13px; margin-bottom: 6px; color: #b0b0b0; font-weight: 500; }
+.input-with-btn { display: flex; gap: 8px; }
+.input-with-btn input { flex: 1; }
+.input-with-btn button { flex: 0 0 auto; padding: 10px 12px; }
+input, textarea { width: 100%; padding: 10px; background: #2a2a2a; border: 1px solid #3a3a3a; border-radius: 6px; color: #fff; font-family: inherit; font-size: 13px; }
+input::placeholder, textarea::placeholder { color: #666; }
+textarea { min-height: 50px; resize: vertical; }
+.color-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-top: 8px; }
+.color-box { width: 100%; aspect-ratio: 1; border-radius: 8px; cursor: pointer; border: 3px solid transparent; transition: all 0.2s; }
+.color-box:hover { transform: scale(1.05); }
+.color-box.selected { border-color: #fff; box-shadow: 0 0 10px rgba(255,255,255,0.6); }
+.color-input-group { display: flex; gap: 8px; margin-top: 8px; }
+.color-code-input { flex: 1; padding: 10px; background: #2a2a2a; border: 1px solid #3a3a3a; border-radius: 6px; color: #fff; font-family: 'Monaco', monospace; font-size: 12px; font-weight: 600; }
+.color-preview { width: 40px; height: 40px; border-radius: 6px; border: 2px solid #3a3a3a; flex-shrink: 0; }
+.btn-small { padding: 8px 12px; background: #404040; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; transition: all 0.2s; }
+.btn-small:hover { background: #505050; }
+.buttons { display: flex; gap: 10px; margin-top: 20px; }
+button { flex: 1; padding: 11px; border: none; border-radius: 8px; font-size: 13px; cursor: pointer; transition: all 0.2s; font-weight: 600; }
+.btn-generate { background: #82B1FF; color: #000; }
+.btn-generate:hover { background: #a8cbff; }
+.btn-copy { background: #69F0AE; color: #000; }
+.btn-copy:hover { background: #8effc4; }
+.btn-clear { background: #ff6b6b; color: #fff; }
+.btn-clear:hover { background: #ff8080; }
+.preview-section { background: #2f2f2f; border-radius: 10px; padding: 15px; margin-bottom: 20px; display: none; }
+.preview-section.show { display: block; }
+.preview-card { background: #242424; border-radius: 8px; padding: 12px; display: flex; align-items: center; gap: 10px; border: 1px solid #3a3a3a; }
+.preview-icon { width: 48px; height: 48px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+.preview-text h4 { font-size: 13px; margin-bottom: 2px; font-weight: 600; color: #fff; }
+.preview-text p { font-size: 11px; color: #808080; }
+.code-section { background: #2f2f2f; border-radius: 10px; padding: 15px; margin-bottom: 20px; display: none; }
+.code-section.show { display: block; }
+.code-title { font-size: 12px; color: #b0b0b0; margin-bottom: 10px; text-transform: uppercase; font-weight: 600; }
+.code-block { background: #1a1a1a; border: 1px solid #3a3a3a; border-radius: 6px; padding: 12px; overflow-x: auto; font-family: 'Monaco', 'Courier New', monospace; font-size: 11px; line-height: 1.5; color: #82B1FF; margin-bottom: 10px; max-height: 150px; overflow-y: auto; }
+.instructions { background: #1a3a2a; border-left: 3px solid #69F0AE; padding: 12px; border-radius: 6px; font-size: 12px; line-height: 1.6; color: #b0b0b0; }
+.instructions strong { color: #69F0AE; }
+.copy-feedback { position: fixed; bottom: 20px; right: 20px; background: #69F0AE; color: #000; padding: 10px 16px; border-radius: 6px; opacity: 0; transition: opacity 0.3s; pointer-events: none; font-size: 12px; font-weight: 600; }
+.copy-feedback.show { opacity: 1; pointer-events: auto; }
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+/* 底部抽屜 */
+.bottom-sheet-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 999; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+.bottom-sheet-overlay.active { opacity: 1; pointer-events: auto; }
+.bottom-sheet { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #1a1a1a; z-index: 1000; width: 100%; height: 100%; display: flex; flex-direction: column; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.4,0,0.2,1); overflow: hidden; }
+.bottom-sheet.active { transform: translateY(0); }
+.bottom-sheet-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; border-bottom: 1px solid #3a3a3a; flex-shrink: 0; background: #242424; }
+.bottom-sheet-title { font-size: 16px; font-weight: 600; color: #fff; }
+.bottom-sheet-close { font-size: 24px; cursor: pointer; color: #808080; }
+.bottom-sheet-content { flex: 1; overflow-y: auto; padding: 20px; }
 
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-  background: var(--color-bg-primary);
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-base);
-  line-height: 1.5;
-  min-height: 100vh;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+/* 圖示庫 - 縱向列表式 */
+.emoji-grid { display: flex; flex-direction: column; gap: 12px; }
+.emoji-row { display: flex; gap: 8px; align-items: center; }
+.emoji-item { display: flex; align-items: center; justify-content: center; background: #242424; border-radius: 10px; padding: 0; font-size: 32px; cursor: pointer; border: 2px solid transparent; transition: all 0.2s; width: 60px; height: 60px; flex-shrink: 0; }
+.emoji-item:hover { background: #2f2f2f; transform: scale(1.15); border-color: #82B1FF; }
 
-/* ========== 頭部 ========== */
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: var(--spacing-lg);
-  background: var(--color-bg-secondary);
-  border-bottom: 1px solid var(--color-border);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  backdrop-filter: blur(10px);
-  background: rgba(36, 36, 36, 0.95);
-}
+/* 顏色歷史 - 縱向列表式 */
+.color-history-grid { display: flex; flex-direction: column; gap: 10px; }
+.color-history-row { display: flex; gap: 10px; align-items: center; }
+.color-history-item { display: flex; align-items: center; gap: 12px; background: #242424; padding: 12px; border-radius: 8px; cursor: pointer; border: 2px solid transparent; transition: all 0.2s; width: 100px; flex-shrink: 0; }
+.color-history-item:hover { background: #2f2f2f; border-color: #82B1FF; transform: scale(1.05); }
+.color-history-box { width: 50px; height: 50px; border-radius: 6px; border: 1px solid #3a3a3a; flex-shrink: 0; }
+.color-history-code { font-family: 'Monaco', monospace; font-size: 10px; color: #82B1FF; font-weight: 600; text-align: center; }
 
-.header-left {
-  color: var(--color-text-primary);
-  font-size: var(--font-size-md);
-  font-weight: 500;
-  cursor: pointer;
-}
+.btn-clear-all { width: 100%; padding: 12px; margin-top: 15px; background: #ff6b6b; color: #fff; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; }
 
-.header-center {
-  color: var(--color-text-primary);
-  font-size: var(--font-size-lg);
-  font-weight: 600;
-}
-
-.header-right {
-  color: var(--color-text-primary);
-  font-size: var(--font-size-xl);
-  cursor: pointer;
-}
-
-/* ========== 搜索欄 ========== */
-.search-container {
-  padding: var(--spacing-lg);
-  background: var(--color-bg-secondary);
-}
-
-.search-box {
-  display: flex;
-  align-items: center;
-  background: var(--color-bg-tertiary);
-  border-radius: var(--radius-lg);
-  padding: var(--spacing-md) var(--spacing-lg);
-  gap: var(--spacing-sm);
-}
-
-.search-input {
-  flex: 1;
-  background: transparent;
-  border: none;
-  outline: none;
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-base);
-}
-
-.search-input::placeholder {
-  color: var(--color-text-tertiary);
-}
-
-/* ========== 分類標籤（藍色區域） ========== */
-.tabs-container {
-  padding: var(--spacing-md) var(--spacing-lg);
-  background: var(--color-bg-secondary);
-  border-bottom: 1px solid var(--color-border);
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-}
-
-.tabs-container::-webkit-scrollbar {
-  display: none;
-}
-
-.tabs {
-  display: flex;
-  gap: var(--spacing-sm);
-  min-width: min-content;
-}
-
-.tab {
-  padding: var(--spacing-sm) var(--spacing-lg);
-  background: var(--color-bg-tertiary);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-sm);
-  white-space: nowrap;
-  cursor: pointer;
-  transition: all 0.3s;
-  user-select: none;
-}
-
-.tab.active {
-  background: var(--color-bg-card);
-  border-color: var(--color-border-light);
-  color: var(--color-text-primary);
-  font-weight: 600;
-}
-
-/* ========== 主內容區域（綠色區域）========== */
-.content {
-  padding: var(--spacing-md) var(--spacing-lg);
-  padding-bottom: 100px;
-  min-height: calc(100vh - 200px);
-}
-
-/* ========== 工具卡片 ========== */
-.tool-card {
-  background: var(--color-bg-secondary);
-  border-radius: var(--radius-lg);
-  padding: var(--spacing-md);
-  margin-bottom: var(--spacing-sm);
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-md);
-  cursor: pointer;
-  transition: all 0.3s;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-  min-height: 80px;
-  border: 1px solid var(--color-border);
-}
-
-.tool-card:active {
-  transform: scale(0.98);
-}
-
-.tool-icon {
-  width: 56px;
-  height: 56px;
-  border-radius: var(--radius-md);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 28px;
-  flex-shrink: 0;
-}
-
-.tool-content {
-  flex: 1;
-  min-width: 0;
-}
-
-.tool-title {
-  color: var(--color-text-primary);
-  font-size: var(--font-size-base);
-  font-weight: 600;
-  margin-bottom: var(--spacing-xs);
-}
-
-.tool-description {
-  color: var(--color-text-tertiary);
-  font-size: var(--font-size-xs);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.tool-arrow {
-  color: var(--color-text-tertiary);
-  font-size: var(--font-size-lg);
-  flex-shrink: 0;
-}
-
-/* ========== 底部抽屜（紅色區域）========== */
-.bottom-sheet-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 999;
-  opacity: 0;
-  transition: opacity 0.3s;
-  pointer-events: none;
-}
-
-.bottom-sheet-overlay.active {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-.bottom-sheet {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: var(--color-bg-primary);
-  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
-  z-index: 1000;
-  max-height: 90vh;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  transform: translateY(100%);
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  touch-action: none;
-}
-
-.bottom-sheet.active {
-  transform: translateY(0);
-}
-
-.bottom-sheet-handle {
-  width: 40px;
-  height: 4px;
-  background: var(--color-border-light);
-  border-radius: 2px;
-  margin: var(--spacing-lg) auto;
-  cursor: grab;
-}
-
-.bottom-sheet-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 var(--spacing-lg) var(--spacing-lg);
-  border-bottom: 1px solid var(--color-border);
-  flex-shrink: 0;
-}
-
-.bottom-sheet-title {
-  color: var(--color-text-primary);
-  font-size: var(--font-size-lg);
-  font-weight: 600;
-}
-
-.bottom-sheet-close {
-  font-size: var(--font-size-xl);
-  cursor: pointer;
-  color: var(--color-text-tertiary);
-}
-
-.bottom-sheet-content {
-  flex: 1;
-  overflow-y: auto;
-  padding: var(--spacing-lg);
-  -webkit-overflow-scrolling: touch;
-}
-
-.bottom-sheet-content iframe {
-  width: 100%;
-  height: 100%;
-  border: none;
-  border-radius: var(--radius-md);
-}
-
-/* ========== 底部導航（黃色區域）========== */
-.bottom-nav {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: var(--color-bg-secondary);
-  border-top: 1px solid var(--color-border);
-  display: flex;
-  justify-content: space-around;
-  padding: var(--spacing-sm) 0;
-  z-index: 100;
-  backdrop-filter: blur(10px);
-}
-
-.nav-item {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  padding: var(--spacing-xs);
-  color: var(--color-text-tertiary);
-  font-size: var(--font-size-xs);
-  cursor: pointer;
-  transition: all 0.2s;
-  user-select: none;
-}
-
-.nav-item.active {
-  color: var(--color-text-primary);
-}
-
-.nav-icon {
-  font-size: 22px;
-}
-
-/* ========== 分類內容（模板系統）========== */
-.category-section {
-  display: none;
-}
-
-.category-section.active {
-  display: block;
-}
-
-/* ========== 分類選項卡（橫向標籤）========== */
-.category-tabs {
-  display: flex;
-  gap: var(--spacing-sm);
-  margin-bottom: var(--spacing-lg);
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-}
-
-.category-tabs::-webkit-scrollbar {
-  display: none;
-}
-
-.category-tab {
-  padding: var(--spacing-sm) var(--spacing-lg);
-  background: var(--color-bg-secondary);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-sm);
-  white-space: nowrap;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.category-tab.active {
-  background: var(--color-bg-card);
-  border-color: var(--color-border-light);
-  color: var(--color-text-primary);
-  font-weight: 600;
-}
-
-/* ========== 頁面容器 ========== */
-.page-section {
-  display: none;
-}
-
-.page-section.active {
-  display: block;
-}
-
-/* ========== 動畫 ========== */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* iOS 優化 */
-@supports (-webkit-touch-callout: none) {
-  body {
-    min-height: -webkit-fill-available;
-  }
-}
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #2a2a2a; }
+::-webkit-scrollbar-thumb { background: #404040; border-radius: 3px; }
 </style>
 </head>
 <body>
-
-<!-- 頭部 -->
-<div class="header">
-  <div class="header-left" onclick="goBack()">返回</div>
-  <div class="header-center">整合工具</div>
-  <div class="header-right" onclick="toggleMenu()">☰</div>
-</div>
-
-<!-- 搜索欄 -->
-<div class="search-container">
-  <div class="search-box">
-    <div style="font-size: 18px;">🔍</div>
-    <input type="text" class="search-input" placeholder="搜尋工具" id="searchInput" oninput="handleSearch()">
+<div class="container">
+  <h1>🛠️ 工具代碼生成器</h1>
+  <div class="form-section">
+    <div class="form-group">
+      <label>工具名稱</label>
+      <input type="text" id="toolName" placeholder="例如：時間追蹤器">
+    </div>
+    <div class="form-group">
+      <label>描述</label>
+      <textarea id="toolDesc" placeholder="簡短描述工具功能"></textarea>
+    </div>
+    <div class="form-group">
+      <label>連結</label>
+      <div class="input-with-btn">
+        <input type="text" id="toolUrl" placeholder="https://example.com">
+        <button class="btn-small" onclick="pasteUrl()">貼上</button>
+        <button class="btn-small" onclick="clearUrl()" style="background: #ff6b6b;">清除</button>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>圖示</label>
+      <div class="input-with-btn">
+        <input type="text" id="toolIcon" placeholder="例如：⏰" maxlength="2">
+        <button class="btn-small" onclick="openEmojiPicker()">參考</button>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>顏色</label>
+      <div class="color-grid" id="colorGrid"></div>
+      <div class="color-input-group">
+        <input type="text" id="colorCode" class="color-code-input" placeholder="#FF8A80" maxlength="7">
+        <div class="color-preview" id="colorPreview" style="background: #FF8A80;"></div>
+        <button class="btn-small" onclick="openColorHistory()">歷史</button>
+      </div>
+    </div>
+    <div class="buttons">
+      <button class="btn-generate" onclick="generateCode()">生成代碼</button>
+      <button class="btn-clear" onclick="clearForm()">清空</button>
+    </div>
+  </div>
+  <!-- 預覽區 -->
+  <div class="preview-section" id="previewSection">
+    <div class="preview-card" id="previewCard"></div>
+  </div>
+  <!-- 生成的代碼區 -->
+  <div class="code-section" id="codeSection">
+    <div class="code-title">生成的代碼</div>
+    <div class="code-block" id="generatedCode"></div>
+    <button class="btn-copy" onclick="copyCode()" style="width: 100%;">📋 複製</button>
+  </div>
+  <!-- 使用說明 -->
+  <div class="instructions">
+    <strong>📖 貼入位置：</strong><br>
+    找到主 HTML 的對應分類，貼在 <code>items: []</code> 裡面<br><br>
+    <strong>清除快取：</strong><br>
+    執行 <code>localStorage.clear()</code> 然後重新整理
   </div>
 </div>
 
-<!-- 分類標籤（藍色區域）- 主導航 -->
-<div class="tabs-container">
-  <div class="tabs" id="mainTabs">
-    <div class="tab active" onclick="switchMainTab('integrate')">整合</div>
-    <div class="tab" onclick="switchMainTab('tattoo')">刺青</div>
-    <div class="tab" onclick="switchMainTab('energy')">能量</div>
-    <div class="tab" onclick="switchMainTab('record')">紀錄</div>
-  </div>
-</div>
-
-<!-- 主內容區域（綠色區域） -->
-<div class="content" id="mainContent">
-  
-  <!-- 整合分類 -->
-  <div id="integratePage" class="page-section active">
-    <div id="integrateGrid"></div>
-  </div>
-
-  <!-- 刺青分類 -->
-  <div id="tattooPage" class="page-section">
-    <!-- 刺青內部標籤 -->
-    <div class="category-tabs" id="tattooTabs"></div>
-    <!-- 刺青內容 -->
-    <div id="tattooContent"></div>
-  </div>
-
-  <!-- 能量分類 -->
-  <div id="energyPage" class="page-section">
-    <!-- 能量內部標籤 -->
-    <div class="category-tabs" id="energyTabs"></div>
-    <!-- 能量內容 -->
-    <div id="energyContent"></div>
-  </div>
-
-  <!-- 紀錄分類 -->
-  <div id="recordPage" class="page-section">
-    <div id="recordContent"></div>
-  </div>
-
-</div>
-
-<!-- 底部抽屜（紅色區域）- 完整高度顯示 -->
-<div class="bottom-sheet-overlay" id="bottomSheetOverlay" onclick="closeBottomSheet()"></div>
-<div class="bottom-sheet" id="bottomSheet">
-  <div class="bottom-sheet-handle"></div>
+<!-- 底部抽屜 - 圖示選擇器 -->
+<div class="bottom-sheet-overlay" id="emojiOverlay" onclick="closeEmojiPicker()"></div>
+<div class="bottom-sheet" id="emojiSheet">
   <div class="bottom-sheet-header">
-    <div class="bottom-sheet-title" id="sheetTitle">工具</div>
-    <div class="bottom-sheet-close" onclick="closeBottomSheet()">✕</div>
+    <div class="bottom-sheet-title">選擇圖示</div>
+    <div class="bottom-sheet-close" onclick="closeEmojiPicker()">✕</div>
   </div>
-  <div class="bottom-sheet-content" id="sheetContent"></div>
+  <div class="bottom-sheet-content" id="emojiGrid"></div>
 </div>
 
-<!-- 底部導航（黃色區域）- 獨立分開 -->
-<div class="bottom-nav">
-  <div class="nav-item active" onclick="switchMainTab('integrate')">
-    <div class="nav-icon">📦</div>
-    <div>整合</div>
+<!-- 底部抽屜 - 顏色歷史 -->
+<div class="bottom-sheet-overlay" id="historyOverlay" onclick="closeColorHistory()"></div>
+<div class="bottom-sheet" id="historySheet">
+  <div class="bottom-sheet-header">
+    <div class="bottom-sheet-title">顏色歷史</div>
+    <div class="bottom-sheet-close" onclick="closeColorHistory()">✕</div>
   </div>
-  <div class="nav-item" onclick="switchMainTab('tattoo')">
-    <div class="nav-icon">🖋</div>
-    <div>刺青</div>
-  </div>
-  <div class="nav-item" onclick="switchMainTab('energy')">
-    <div class="nav-icon">⚡</div>
-    <div>能量</div>
-  </div>
-  <div class="nav-item" onclick="switchMainTab('record')">
-    <div class="nav-icon">📝</div>
-    <div>紀錄</div>
+  <div class="bottom-sheet-content">
+    <div id="colorHistoryGrid"></div>
+    <button class="btn-clear-all" onclick="clearColorHistory()">清除所有歷史</button>
   </div>
 </div>
+
+<div class="copy-feedback" id="feedback">✓ 已複製</div>
 
 <script>
-// ============ 儲存鍵值 ============
-const STORAGE_KEYS = {
-  TOOLS_LIST: 'integrateTool_toolsList',
-  TATTOO_CATEGORIES: 'integrateTool_tattooCategories',
-  ENERGY_CATEGORIES: 'integrateTool_energyCategories',
-  RECORDS: 'integrateTool_records',
-  CURRENT_MAIN_TAB: 'integrateTool_currentMainTab'
-};
-
-// ============ 整合分類工具（可無限延續）============
-const DEFAULT_TOOLS = [
-  {
-    id: 'tool1',
-    title: '工具1',
-    description: 'apple1 功能說明',
-    icon: '🍎',
-    color: '#FF8A80',
-    url: 'https://30ta2.github.io/ap/apple1.html'
-  },
-  {
-    id: 'tool2',
-    title: '工具2',
-    description: 'apple2 功能說明',
-    icon: '🍏',
-    color: '#82B1FF',
-    url: 'https://30ta2.github.io/ap/apple2.html'
-  },
-  {
-    id: 'tool3',
-    title: '工具3',
-    description: '自訂工具說明',
-    icon: '🔧',
-    color: '#FFD54F',
-    url: ''
-  },
-  {
-    id: 'tool4',
-    title: '工具4',
-    description: '自訂工具說明',
-    icon: '📊',
-    color: '#69F0AE',
-    url: ''
-  },
-  {
-    id: 'tool5',
-    title: '工具5',
-    description: '自訂工具說明',
-    icon: '⚙️',
-    color: '#B388FF',
-    url: ''
-  },
-  {
-    id: 'tool6',
-    title: '工具6',
-    description: '自訂工具說明',
-    icon: '🎯',
-    color: '#64B5F6',
-    url: ''
-  },
-  {
-    id: 'tool7',
-    title: '工具7',
-    description: '自訂工具說明',
-    icon: '💡',
-    color: '#FF8A65',
-    url: ''
-  },
-  {
-    id: 'tool8',
-    title: '工具8',
-    description: '自訂工具說明',
-    icon: '🚀',
-    color: '#FFD740',
-    url: ''
-  }
+const colors = [
+  '#FF8A80', '#82B1FF', '#FFD54F', '#69F0AE', '#B388FF', '#64B5F6',
+  '#FF87B0', '#54D8FF', '#FFD263', '#B6DC8A', '#B1B7ED', '#FF81B4'
 ];
 
-// ============ 刺青分類模板 ============
-const DEFAULT_TATTOO_CATEGORIES = [
-  {
-    id: 'tattoo_cat1',
-    name: '計數器',
-    icon: '🔢',
-    color: '#FF8A80',
-    items: []
-  },
-  {
-    id: 'tattoo_cat2',
-    name: '統計',
-    icon: '📊',
-    color: '#82B1FF',
-    items: []
-  }
+const emojis = [
+  '🧘', '📅', '⏰', '✅', '🔧', '🎵', '📊', '🖋',
+  '💡', '⚙️', '🎯', '🚀', '📱', '🎨', '🎭', '🎪',
+  '🎬', '🎮', '🍕', '🍔', '🍣', '☕', '🍰', '🎂',
+  '⚽', '🏀', '🎾', '🏐', '🏈', '⛳', '🌟', '⭐',
+  '✨', '💫', '🌠', '🔥', '❤️', '💙', '💚', '💛',
+  '🧡', '💜', '🚗', '🚕', '🚙', '✈️', '🚁', '🚂',
+  '🎓', '📚', '✏️', '📝', '🔐', '🔓', '🔔', '📢'
 ];
 
-// ============ 能量分類模板 ============
-const DEFAULT_ENERGY_CATEGORIES = [
-  {
-    id: 'energy_cat1',
-    name: '計數器',
-    icon: '🔢',
-    color: '#FFD54F',
-    items: []
-  },
-  {
-    id: 'energy_cat2',
-    name: '統計',
-    icon: '📈',
-    color: '#69F0AE',
-    items: []
+let selectedColor = '#FF8A80';
+let colorHistory = JSON.parse(localStorage.getItem('colorHistory') || '[]');
+
+function initColorGrid() {
+  const grid = document.getElementById('colorGrid');
+  colors.forEach(color => {
+    const box = document.createElement('div');
+    box.className = `color-box ${color === selectedColor ? 'selected' : ''}`;
+    box.style.background = color;
+    box.onclick = () => selectColor(color);
+    grid.appendChild(box);
+  });
+  updateDisplay();
+}
+
+function selectColor(color) {
+  selectedColor = color;
+  addToColorHistory(color);
+  updateDisplay();
+  updatePreview();
+}
+
+function updateDisplay() {
+  document.getElementById('colorCode').value = selectedColor;
+  document.getElementById('colorPreview').style.background = selectedColor;
+  document.querySelectorAll('.color-box').forEach(el => el.classList.remove('selected'));
+  document.querySelectorAll(`.color-box[style*="${selectedColor}"]`).forEach(el => el.classList.add('selected'));
+}
+
+function handleColorInput() {
+  const input = document.getElementById('colorCode').value.trim();
+  if (/^#[0-9A-Fa-f]{6}$/.test(input)) {
+    selectedColor = input.toUpperCase();
+    addToColorHistory(selectedColor);
+    updateDisplay();
+    updatePreview();
   }
-];
-
-// ============ 全局變數 ============
-let allTools = [];
-let tattooCategories = [];
-let energyCategories = [];
-let currentMainTab = 'integrate';
-let currentTattooTab = '';
-let currentEnergyTab = '';
-let sheetStartY = 0;
-let sheetCurrentY = 0;
-
-// ============ 初始化 ============
-function initApp() {
-  loadAllData();
-  renderIntegrate();
-  renderTattooCategories();
-  renderEnergyCategories();
-  setupBottomSheetGestures();
 }
 
-function loadAllData() {
-  // 加載整合工具
-  const toolsData = localStorage.getItem(STORAGE_KEYS.TOOLS_LIST);
-  allTools = toolsData ? JSON.parse(toolsData) : DEFAULT_TOOLS;
-  if (!toolsData) localStorage.setItem(STORAGE_KEYS.TOOLS_LIST, JSON.stringify(allTools));
-
-  // 加載刺青分類
-  const tattooData = localStorage.getItem(STORAGE_KEYS.TATTOO_CATEGORIES);
-  tattooCategories = tattooData ? JSON.parse(tattooData) : DEFAULT_TATTOO_CATEGORIES;
-  if (!tattooData) localStorage.setItem(STORAGE_KEYS.TATTOO_CATEGORIES, JSON.stringify(tattooCategories));
-
-  // 加載能量分類
-  const energyData = localStorage.getItem(STORAGE_KEYS.ENERGY_CATEGORIES);
-  energyCategories = energyData ? JSON.parse(energyData) : DEFAULT_ENERGY_CATEGORIES;
-  if (!energyData) localStorage.setItem(STORAGE_KEYS.ENERGY_CATEGORIES, JSON.stringify(energyCategories));
+function addToColorHistory(color) {
+  if (!colorHistory.includes(color)) {
+    colorHistory.unshift(color);
+    if (colorHistory.length > 30) colorHistory.pop();
+    localStorage.setItem('colorHistory', JSON.stringify(colorHistory));
+  }
 }
 
-function saveAllData() {
-  localStorage.setItem(STORAGE_KEYS.TOOLS_LIST, JSON.stringify(allTools));
-  localStorage.setItem(STORAGE_KEYS.TATTOO_CATEGORIES, JSON.stringify(tattooCategories));
-  localStorage.setItem(STORAGE_KEYS.ENERGY_CATEGORIES, JSON.stringify(energyCategories));
-}
-
-// ============ 整合分類渲染 ============
-function renderIntegrate() {
-  const grid = document.getElementById('integrateGrid');
+function openEmojiPicker() {
+  const grid = document.getElementById('emojiGrid');
   grid.innerHTML = '';
-
-  allTools.forEach(tool => {
-    const card = document.createElement('div');
-    card.className = 'tool-card';
-    card.onclick = () => openTool(tool);
-
-    const gradientColor = adjustColor(tool.color, -20);
-    card.innerHTML = `
-      <div class="tool-icon" style="background: linear-gradient(135deg, ${tool.color} 0%, ${gradientColor} 100%);">
-        ${tool.icon}
-      </div>
-      <div class="tool-content">
-        <div class="tool-title">${tool.title}</div>
-        <div class="tool-description">${tool.description}</div>
-      </div>
-      <div class="tool-arrow">›</div>
-    `;
-
-    grid.appendChild(card);
-  });
-}
-
-// ============ 刺青分類模板系統 ============
-function renderTattooCategories() {
-  const tabsContainer = document.getElementById('tattooTabs');
-  const contentContainer = document.getElementById('tattooContent');
   
-  tabsContainer.innerHTML = '';
-  contentContainer.innerHTML = '';
-
-  tattooCategories.forEach((category, index) => {
-    // 創建標籤
-    const tab = document.createElement('div');
-    tab.className = `category-tab ${index === 0 ? 'active' : ''}`;
-    tab.textContent = category.name;
-    tab.onclick = () => switchTattooTab(category.id);
-    tabsContainer.appendChild(tab);
-  });
-
-  // 初始化第一個分類
-  if (tattooCategories.length > 0) {
-    currentTattooTab = tattooCategories[0].id;
-    renderTattooTabContent(currentTattooTab);
-  }
-}
-
-function switchTattooTab(categoryId) {
-  currentTattooTab = categoryId;
-  
-  document.querySelectorAll('#tattooTabs .category-tab').forEach(tab => {
-    tab.classList.remove('active');
-  });
-  event.target.classList.add('active');
-
-  renderTattooTabContent(categoryId);
-}
-
-function renderTattooTabContent(categoryId) {
-  const category = tattooCategories.find(c => c.id === categoryId);
-  const contentContainer = document.getElementById('tattooContent');
-  
-  if (!category) return;
-
-  contentContainer.innerHTML = '';
-
-  if (category.items.length === 0) {
-    contentContainer.innerHTML = `
-      <div style="text-align: center; padding: 40px; color: var(--color-text-tertiary);">
-        <div style="font-size: 48px; margin-bottom: 16px;">📭</div>
-        <p>此分類暫無內容</p>
-        <p style="font-size: var(--font-size-sm); margin-top: 16px;">點擊下方按鈕添加</p>
-      </div>
-      <button onclick="addTattooItem('${categoryId}')" style="width: 100%; padding: var(--spacing-lg); background: var(--color-bg-tertiary); border: 1px solid var(--color-border); color: var(--color-text-secondary); border-radius: var(--radius-md); cursor: pointer; margin-top: 16px;">➕ 添加新項目</button>
-    `;
-    return;
-  }
-
-  category.items.forEach(item => {
-    const itemCard = document.createElement('div');
-    itemCard.className = 'tool-card';
-    itemCard.style.marginBottom = 'var(--spacing-sm)';
-
-    itemCard.innerHTML = `
-      <div style="flex: 1;">
-        <div class="tool-title">${item.title || '未命名'}</div>
-        <div class="tool-description">${item.url || '無連結'}</div>
-      </div>
-      <div style="display: flex; gap: 8px;">
-        <button onclick="editTattooItem('${categoryId}', '${item.id}')" style="background: none; border: none; color: var(--color-text-tertiary); cursor: pointer; font-size: 18px;">✏️</button>
-        <button onclick="deleteTattooItem('${categoryId}', '${item.id}')" style="background: none; border: none; color: #ff6b6b; cursor: pointer; font-size: 18px;">🗑️</button>
-      </div>
-    `;
-
-    contentContainer.appendChild(itemCard);
-  });
-
-  const addBtn = document.createElement('button');
-  addBtn.innerHTML = '➕ 添加新項目';
-  addBtn.onclick = () => addTattooItem(categoryId);
-  addBtn.style.cssText = 'width: 100%; padding: var(--spacing-lg); background: var(--color-bg-tertiary); border: 1px solid var(--color-border); color: var(--color-text-secondary); border-radius: var(--radius-md); cursor: pointer; margin-top: var(--spacing-lg);';
-  
-  contentContainer.appendChild(addBtn);
-}
-
-function addTattooItem(categoryId) {
-  const title = prompt('請輸入項目名稱:');
-  if (!title) return;
-
-  const url = prompt('請輸入 HTML 連結:');
-  if (!url) return;
-
-  const category = tattooCategories.find(c => c.id === categoryId);
-  if (category) {
-    category.items.push({
-      id: Date.now().toString(),
-      title: title,
-      url: url
-    });
-    saveAllData();
-    renderTattooTabContent(categoryId);
-  }
-}
-
-function editTattooItem(categoryId, itemId) {
-  const category = tattooCategories.find(c => c.id === categoryId);
-  const item = category.items.find(i => i.id === itemId);
-  
-  if (item) {
-    const newTitle = prompt('編輯名稱:', item.title);
-    if (newTitle) item.title = newTitle;
+  for (let i = 0; i < emojis.length; i += 5) {
+    const row = document.createElement('div');
+    row.className = 'emoji-row';
     
-    const newUrl = prompt('編輯連結:', item.url);
-    if (newUrl) item.url = newUrl;
+    for (let j = i; j < Math.min(i + 5, emojis.length); j++) {
+      const item = document.createElement('div');
+      item.className = 'emoji-item';
+      item.textContent = emojis[j];
+      item.onclick = () => selectEmoji(emojis[j]);
+      row.appendChild(item);
+    }
     
-    saveAllData();
-    renderTattooTabContent(categoryId);
+    grid.appendChild(row);
   }
-}
-
-function deleteTattooItem(categoryId, itemId) {
-  if (confirm('確定要刪除此項目嗎？')) {
-    const category = tattooCategories.find(c => c.id === categoryId);
-    if (category) {
-      category.items = category.items.filter(i => i.id !== itemId);
-      saveAllData();
-      renderTattooTabContent(categoryId);
-    }
-  }
-}
-
-// ============ 能量分類模板系統 ============
-function renderEnergyCategories() {
-  const tabsContainer = document.getElementById('energyTabs');
-  const contentContainer = document.getElementById('energyContent');
   
-  tabsContainer.innerHTML = '';
-  contentContainer.innerHTML = '';
-
-  energyCategories.forEach((category, index) => {
-    const tab = document.createElement('div');
-    tab.className = `category-tab ${index === 0 ? 'active' : ''}`;
-    tab.textContent = category.name;
-    tab.onclick = () => switchEnergyTab(category.id);
-    tabsContainer.appendChild(tab);
-  });
-
-  if (energyCategories.length > 0) {
-    currentEnergyTab = energyCategories[0].id;
-    renderEnergyTabContent(currentEnergyTab);
-  }
+  document.getElementById('emojiSheet').classList.add('active');
+  document.getElementById('emojiOverlay').classList.add('active');
 }
 
-function switchEnergyTab(categoryId) {
-  currentEnergyTab = categoryId;
-  
-  document.querySelectorAll('#energyTabs .category-tab').forEach(tab => {
-    tab.classList.remove('active');
-  });
-  event.target.classList.add('active');
-
-  renderEnergyTabContent(categoryId);
+function closeEmojiPicker() {
+  document.getElementById('emojiSheet').classList.remove('active');
+  document.getElementById('emojiOverlay').classList.remove('active');
 }
 
-function renderEnergyTabContent(categoryId) {
-  const category = energyCategories.find(c => c.id === categoryId);
-  const contentContainer = document.getElementById('energyContent');
-  
-  if (!category) return;
-
-  contentContainer.innerHTML = '';
-
-  if (category.items.length === 0) {
-    contentContainer.innerHTML = `
-      <div style="text-align: center; padding: 40px; color: var(--color-text-tertiary);">
-        <div style="font-size: 48px; margin-bottom: 16px;">📭</div>
-        <p>此分類暫無內容</p>
-        <p style="font-size: var(--font-size-sm); margin-top: 16px;">點擊下方按鈕添加</p>
-      </div>
-      <button onclick="addEnergyItem('${categoryId}')" style="width: 100%; padding: var(--spacing-lg); background: var(--color-bg-tertiary); border: 1px solid var(--color-border); color: var(--color-text-secondary); border-radius: var(--radius-md); cursor: pointer; margin-top: 16px;">➕ 添加新項目</button>
-    `;
-    return;
-  }
-
-  category.items.forEach(item => {
-    const itemCard = document.createElement('div');
-    itemCard.className = 'tool-card';
-    itemCard.style.marginBottom = 'var(--spacing-sm)';
-
-    itemCard.innerHTML = `
-      <div style="flex: 1;">
-        <div class="tool-title">${item.title || '未命名'}</div>
-        <div class="tool-description">${item.url || '無連結'}</div>
-      </div>
-      <div style="display: flex; gap: 8px;">
-        <button onclick="editEnergyItem('${categoryId}', '${item.id}')" style="background: none; border: none; color: var(--color-text-tertiary); cursor: pointer; font-size: 18px;">✏️</button>
-        <button onclick="deleteEnergyItem('${categoryId}', '${item.id}')" style="background: none; border: none; color: #ff6b6b; cursor: pointer; font-size: 18px;">🗑️</button>
-      </div>
-    `;
-
-    contentContainer.appendChild(itemCard);
-  });
-
-  const addBtn = document.createElement('button');
-  addBtn.innerHTML = '➕ 添加新項目';
-  addBtn.onclick = () => addEnergyItem(categoryId);
-  addBtn.style.cssText = 'width: 100%; padding: var(--spacing-lg); background: var(--color-bg-tertiary); border: 1px solid var(--color-border); color: var(--color-text-secondary); border-radius: var(--radius-md); cursor: pointer; margin-top: var(--spacing-lg);';
-  
-  contentContainer.appendChild(addBtn);
+function selectEmoji(emoji) {
+  document.getElementById('toolIcon').value = emoji;
+  closeEmojiPicker();
+  updatePreview();
 }
 
-function addEnergyItem(categoryId) {
-  const title = prompt('請輸入項目名稱:');
-  if (!title) return;
-
-  const url = prompt('請輸入 HTML 連結:');
-  if (!url) return;
-
-  const category = energyCategories.find(c => c.id === categoryId);
-  if (category) {
-    category.items.push({
-      id: Date.now().toString(),
-      title: title,
-      url: url
-    });
-    saveAllData();
-    renderEnergyTabContent(categoryId);
-  }
-}
-
-function editEnergyItem(categoryId, itemId) {
-  const category = energyCategories.find(c => c.id === categoryId);
-  const item = category.items.find(i => i.id === itemId);
-  
-  if (item) {
-    const newTitle = prompt('編輯名稱:', item.title);
-    if (newTitle) item.title = newTitle;
-    
-    const newUrl = prompt('編輯連結:', item.url);
-    if (newUrl) item.url = newUrl;
-    
-    saveAllData();
-    renderEnergyTabContent(categoryId);
-  }
-}
-
-function deleteEnergyItem(categoryId, itemId) {
-  if (confirm('確定要刪除此項目嗎？')) {
-    const category = energyCategories.find(c => c.id === categoryId);
-    if (category) {
-      category.items = category.items.filter(i => i.id !== itemId);
-      saveAllData();
-      renderEnergyTabContent(categoryId);
-    }
-  }
-}
-
-// ============ 工具打開（Bottom Sheet） ============
-function openTool(tool) {
-  if (!tool.url) {
-    alert(`工具 "${tool.title}" 尚未設定頁面`);
-    return;
-  }
-
-  openBottomSheet(tool.title, `<iframe src="${tool.url}"></iframe>`);
-}
-
-// ============ Bottom Sheet 控制 ============
-function openBottomSheet(title, content) {
-  document.getElementById('sheetTitle').textContent = title;
-  document.getElementById('sheetContent').innerHTML = content;
-  document.getElementById('bottomSheet').classList.add('active');
-  document.getElementById('bottomSheetOverlay').classList.add('active');
-}
-
-function closeBottomSheet() {
-  document.getElementById('bottomSheet').classList.remove('active');
-  document.getElementById('bottomSheetOverlay').classList.remove('active');
-}
-
-function setupBottomSheetGestures() {
-  const sheet = document.getElementById('bottomSheet');
-  const handle = document.querySelector('.bottom-sheet-handle');
-  
-  if (!handle) return;
-
-  handle.addEventListener('touchstart', (e) => {
-    sheetStartY = e.touches[0].clientY;
-  });
-
-  handle.addEventListener('touchmove', (e) => {
-    sheetCurrentY = e.touches[0].clientY - sheetStartY;
-    if (sheetCurrentY > 0) {
-      sheet.style.transform = `translateY(${sheetCurrentY}px)`;
-    }
-  });
-
-  handle.addEventListener('touchend', () => {
-    if (sheetCurrentY > 100) {
-      closeBottomSheet();
-    } else {
-      sheet.style.transform = 'translateY(0)';
-    }
-    sheetStartY = 0;
-    sheetCurrentY = 0;
-  });
-}
-
-// ============ 頁面切換 ============
-function switchMainTab(tabName) {
-  currentMainTab = tabName;
-  localStorage.setItem(STORAGE_KEYS.CURRENT_MAIN_TAB, tabName);
-
-  // 更新標籤樣式
-  document.querySelectorAll('.tabs .tab').forEach(tab => {
-    tab.classList.remove('active');
-  });
-  event.target.classList.add('active');
-
-  // 更新導航樣式
-  document.querySelectorAll('.nav-item').forEach(item => {
-    item.classList.remove('active');
-  });
-  event.currentTarget?.closest('.nav-item').classList.add('active');
-
-  // 顯示對應頁面
-  document.querySelectorAll('.page-section').forEach(page => {
-    page.classList.remove('active');
-  });
-
-  switch(tabName) {
-    case 'integrate':
-      document.getElementById('integratePage').classList.add('active');
-      document.querySelectorAll('.nav-item')[0].classList.add('active');
-      break;
-    case 'tattoo':
-      document.getElementById('tattooPage').classList.add('active');
-      document.querySelectorAll('.nav-item')[1].classList.add('active');
-      break;
-    case 'energy':
-      document.getElementById('energyPage').classList.add('active');
-      document.querySelectorAll('.nav-item')[2].classList.add('active');
-      break;
-    case 'record':
-      document.getElementById('recordPage').classList.add('active');
-      document.querySelectorAll('.nav-item')[3].classList.add('active');
-      break;
-  }
-}
-
-// ============ 搜索功能 ============
-function handleSearch() {
-  const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-
-  if (!searchTerm) {
-    renderIntegrate();
-    return;
-  }
-
-  const filtered = allTools.filter(tool =>
-    tool.title.toLowerCase().includes(searchTerm) ||
-    tool.description.toLowerCase().includes(searchTerm)
-  );
-
-  const grid = document.getElementById('integrateGrid');
+function openColorHistory() {
+  const grid = document.getElementById('colorHistoryGrid');
   grid.innerHTML = '';
+  
+  if (colorHistory.length === 0) {
+    grid.innerHTML = '<div style="text-align: center; color: #808080; padding: 40px; width: 100%;">暫無顏色歷史</div>';
+  } else {
+    for (let i = 0; i < colorHistory.length; i += 2) {
+      const row = document.createElement('div');
+      row.className = 'color-history-row';
+      
+      for (let j = i; j < Math.min(i + 2, colorHistory.length); j++) {
+        const color = colorHistory[j];
+        const item = document.createElement('div');
+        item.className = 'color-history-item';
+        item.innerHTML = `<div class="color-history-box" style="background: ${color};"></div>`;
+        item.onclick = () => {
+          selectedColor = color;
+          updateDisplay();
+          updatePreview();
+          closeColorHistory();
+        };
+        row.appendChild(item);
+      }
+      
+      grid.appendChild(row);
+    }
+  }
+  
+  document.getElementById('historySheet').classList.add('active');
+  document.getElementById('historyOverlay').classList.add('active');
+}
 
-  filtered.forEach(tool => {
-    const card = document.createElement('div');
-    card.className = 'tool-card';
-    card.onclick = () => openTool(tool);
+function closeColorHistory() {
+  document.getElementById('historySheet').classList.remove('active');
+  document.getElementById('historyOverlay').classList.remove('active');
+}
 
-    const gradientColor = adjustColor(tool.color, -20);
-    card.innerHTML = `
-      <div class="tool-icon" style="background: linear-gradient(135deg, ${tool.color} 0%, ${gradientColor} 100%);">
-        ${tool.icon}
-      </div>
-      <div class="tool-content">
-        <div class="tool-title">${tool.title}</div>
-        <div class="tool-description">${tool.description}</div>
-      </div>
-      <div class="tool-arrow">›</div>
-    `;
+function clearColorHistory() {
+  if (confirm('確定要清除所有顏色歷史嗎？')) {
+    colorHistory = [];
+    localStorage.setItem('colorHistory', JSON.stringify(colorHistory));
+    openColorHistory();
+  }
+}
 
-    grid.appendChild(card);
+function pasteUrl() {
+  navigator.clipboard.readText().then(text => {
+    document.getElementById('toolUrl').value = text;
+  }).catch(() => alert('無法讀取剪貼板'));
+}
+
+function clearUrl() {
+  document.getElementById('toolUrl').value = '';
+}
+
+function generateCode() {
+  const name = document.getElementById('toolName').value.trim();
+  const desc = document.getElementById('toolDesc').value.trim();
+  const url = document.getElementById('toolUrl').value.trim();
+  const icon = document.getElementById('toolIcon').value.trim();
+  const color = selectedColor;
+
+  if (!name || !desc || !url || !icon) {
+    alert('請填入所有欄位');
+    return;
+  }
+
+  if (!url.startsWith('http')) {
+    alert('URL 必須以 http:// 或 https:// 開頭');
+    return;
+  }
+
+  const jsCode = `{
+  id: 'tool_${Date.now()}',
+  title: '${name}',
+  description: '${desc}',
+  icon: '${icon}',
+  color: '${color}',
+  url: '${url}'
+}`;
+
+  showPreview(name, desc, icon, color);
+  document.getElementById('generatedCode').textContent = jsCode;
+  document.getElementById('codeSection').classList.add('show');
+}
+
+function updatePreview() {
+  const name = document.getElementById('toolName').value.trim();
+  const desc = document.getElementById('toolDesc').value.trim();
+  const icon = document.getElementById('toolIcon').value.trim();
+  const color = selectedColor;
+
+  if (!name || !desc || !icon) return;
+  showPreview(name, desc, icon, color);
+}
+
+function showPreview(name, desc, icon, color) {
+  const gradientColor = adjustColor(color, -20);
+  const html = `
+    <div class="preview-icon" style="background: linear-gradient(135deg, ${color} 0%, ${gradientColor} 100%);">${icon}</div>
+    <div class="preview-text"><h4>${name}</h4><p>${desc}</p></div>
+  `;
+  document.getElementById('previewCard').innerHTML = html;
+  document.getElementById('previewSection').classList.add('show');
+}
+
+function copyCode() {
+  const code = document.getElementById('generatedCode').textContent;
+  navigator.clipboard.writeText(code).then(() => {
+    const feedback = document.getElementById('feedback');
+    feedback.classList.add('show');
+    setTimeout(() => feedback.classList.remove('show'), 2000);
   });
 }
 
-// ============ 工具函數 ============
+function clearForm() {
+  document.getElementById('toolName').value = '';
+  document.getElementById('toolDesc').value = '';
+  document.getElementById('toolUrl').value = '';
+  document.getElementById('toolIcon').value = '';
+  document.getElementById('codeSection').classList.remove('show');
+  document.getElementById('previewSection').classList.remove('show');
+  selectedColor = '#FF8A80';
+  updateDisplay();
+}
+
 function adjustColor(color, amount) {
   const col = parseInt(color.slice(1), 16);
   const r = Math.max(0, Math.min(255, (col >> 16) + amount));
@@ -1077,19 +398,13 @@ function adjustColor(color, amount) {
   return '#' + ((r << 16) | (g << 8) | b).toString(16).padStart(6, '0');
 }
 
-function goBack() {
-  closeBottomSheet();
-}
+document.getElementById('toolName').addEventListener('input', updatePreview);
+document.getElementById('toolDesc').addEventListener('input', updatePreview);
+document.getElementById('toolIcon').addEventListener('input', updatePreview);
+document.getElementById('colorCode').addEventListener('change', handleColorInput);
+document.getElementById('colorCode').addEventListener('input', handleColorInput);
 
-function toggleMenu() {
-  alert('選單功能\n\n可在此添加：\n- 設定\n- 幫助\n- 關於');
-}
-
-// ============ 初始化應用 ============
-window.addEventListener('DOMContentLoaded', () => {
-  initApp();
-});
+window.addEventListener('DOMContentLoaded', initColorGrid);
 </script>
-
 </body>
 </html>
