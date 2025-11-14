@@ -576,6 +576,24 @@ function showNotice(text, color = "lightgreen") {
   }, 2000);
 }
 
+// 獲取時段前綴（中文）
+function getTimePeriod(date) {
+  const hour = date.getHours();
+  if (hour >= 0 && hour < 6) return "凌晨";
+  if (hour >= 6 && hour < 12) return "早上";
+  if (hour >= 12 && hour < 18) return "下午";
+  return "晚上";
+}
+
+// 格式化時間為 24 小時制，帶中文時段
+function formatTime(date) {
+  const period = getTimePeriod(date);
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const seconds = String(date.getSeconds()).padStart(2, '0');
+  return `${period} ${hours}:${minutes}:${seconds}`;
+}
+
 // 時長格式化
 function formatDuration(ms) {
   let sec = Math.floor(ms / 1000);
@@ -640,7 +658,7 @@ function startTask() {
   let entries = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
   entries.push({
     task: currentTask,
-    start: startTime.toLocaleTimeString(),
+    start: formatTime(startTime),
     startDate: startTime.toISOString(),
     end: null,
     duration: null,
@@ -666,7 +684,7 @@ function endTask() {
   let lastEntry = entries.slice().reverse().find(e => !e.end);
   
   if (lastEntry) {
-    lastEntry.end = endTime.toLocaleTimeString();
+    lastEntry.end = formatTime(endTime);
     lastEntry.ms = durationMs;
     lastEntry.duration = formatDuration(durationMs);
     
@@ -681,7 +699,7 @@ function endTask() {
   }
 }
 
-// 更新閒置時間 - 每天00:00歸零
+// 更新閒置時間 - 檔案模式
 function updateIdleTime() {
   if (currentTask) {
     idleEl.textContent = "";
@@ -694,11 +712,10 @@ function updateIdleTime() {
   let idleMs = now - startOfDay;
   const totalTaskMs = getTodayTotalTaskTime();
   
-  // 閒置時間 = 今日經過時間 - 完成的任務時間
+  // 閒置時間 = 今日經過時間 - 完成的任務時間（支持負數）
   idleMs = idleMs - totalTaskMs;
   
-  if (idleMs < 0) idleMs = 0;
-  idleEl.textContent = `⏳ 今日閒置時間：${formatDuration(idleMs)}`;
+  idleEl.textContent = `⏳ 檔案閒置時間：${formatDuration(idleMs)}`;
 }
 
 // 每秒更新閒置時間
@@ -738,16 +755,11 @@ function generateDailyReport() {
   }
   
   html += `<tr><td><b>總時長</b></td><td>${formatDuration(totalSec * 1000)}</td></tr>`;
-  html += `<tr><td><b>閒置時間</b></td><td>${formatDuration(Math.max(0, idleSec) * 1000)}</td></tr>`;
+  html += `<tr><td><b>檔案閒置時間</b></td><td>${formatDuration(idleSec * 1000)}</td></tr>`;
   html += "</table>";
   
   document.getElementById("reportOutput").innerHTML = html;
   showNotice("✅ 今日報表已生成");
-  
-  // 3秒後自動返回打卡頁面
-  setTimeout(() => {
-    showTab(0);
-  }, 3000);
 }
 
 // 複製報表
