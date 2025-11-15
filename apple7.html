@@ -2,10 +2,11 @@
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="整合工具">
+<meta name="theme-color" content="#1a1a1a">
 <title>整合工具</title>
 <style>
 :root {
@@ -23,6 +24,7 @@
   --spacing-lg: 12px;
   --spacing-md: 10px;
   --spacing-sm: 6px;
+  --spacing-xs: 4px;
   --font-size-xs: 11px;
   --font-size-sm: 13px;
   --font-size-base: 15px;
@@ -37,15 +39,21 @@
   padding: 0;
 }
 
-body {
+html, body {
+  width: 100%;
+  height: 100%;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
   background: var(--color-bg-primary);
   color: var(--color-text-secondary);
   font-size: var(--font-size-base);
   line-height: 1.5;
-  min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overscroll-behavior: none;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
 }
 
 .header {
@@ -59,6 +67,7 @@ body {
   top: 0;
   z-index: 100;
   backdrop-filter: blur(10px);
+  flex-shrink: 0;
 }
 
 .header-left {
@@ -67,12 +76,16 @@ body {
   font-weight: 500;
   cursor: pointer;
   min-width: 40px;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .header-center {
   color: var(--color-text-primary);
   font-size: var(--font-size-lg);
   font-weight: 600;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .header-right {
@@ -81,11 +94,14 @@ body {
   cursor: pointer;
   min-width: 40px;
   text-align: right;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .search-container {
   padding: var(--spacing-lg);
   background: var(--color-bg-secondary);
+  flex-shrink: 0;
 }
 
 .search-box {
@@ -110,13 +126,13 @@ body {
   color: var(--color-text-tertiary);
 }
 
-/* ========== 紅色區塊：標籤系統 ========== */
 .sections-container {
   padding: 10px 12px;
   background: var(--color-bg-secondary);
   border-bottom: 1px solid var(--color-border);
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+  flex-shrink: 0;
 }
 
 .sections-container::-webkit-scrollbar {
@@ -139,6 +155,7 @@ body {
   white-space: nowrap;
   cursor: pointer;
   transition: all 0.3s;
+  -webkit-user-select: none;
   user-select: none;
 }
 
@@ -158,11 +175,12 @@ body {
   color: var(--color-active);
 }
 
-/* ========== 綠色區塊：主內容 ========== */
 .content {
+  flex: 1;
   padding: var(--spacing-md) var(--spacing-lg);
-  padding-bottom: 100px;
-  min-height: calc(100vh - 250px);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: calc(60px + var(--spacing-lg));
 }
 
 .tool-card {
@@ -178,6 +196,8 @@ body {
   box-shadow: 0 2px 4px rgba(0,0,0,0.2);
   min-height: 80px;
   border: 1px solid var(--color-border);
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .tool-card:active {
@@ -250,7 +270,6 @@ body {
   background: #2f2f2f;
 }
 
-/* ========== 模態框 ========== */
 .modal-overlay {
   display: none;
   position: fixed;
@@ -400,6 +419,8 @@ body {
   font-size: var(--font-size-lg);
   cursor: pointer;
   color: var(--color-text-tertiary);
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .bottom-sheet-content {
@@ -463,6 +484,8 @@ body {
   font-size: var(--font-size-lg);
   cursor: pointer;
   color: var(--color-text-tertiary);
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .menu-content {
@@ -508,6 +531,7 @@ body {
   padding: var(--spacing-sm) 0;
   z-index: 100;
   backdrop-filter: blur(10px);
+  flex-shrink: 0;
 }
 
 .nav-item {
@@ -520,6 +544,7 @@ body {
   font-size: var(--font-size-xs);
   cursor: pointer;
   transition: all 0.2s;
+  -webkit-user-select: none;
   user-select: none;
 }
 
@@ -540,14 +565,12 @@ body {
 </head>
 <body>
 
-<!-- 紅色：頭部 -->
 <div class="header">
   <div class="header-left" onclick="toggleCollections()">♡</div>
   <div class="header-center">整合工具</div>
   <div class="header-right" onclick="toggleMenu()">☰</div>
 </div>
 
-<!-- 橙色：搜索欄 -->
 <div class="search-container">
   <div class="search-box">
     <div style="font-size: 18px;">🔍</div>
@@ -555,15 +578,12 @@ body {
   </div>
 </div>
 
-<!-- 紅色區塊：標籤系統 -->
 <div class="sections-container">
   <div class="sections" id="sectionsContainer"></div>
 </div>
 
-<!-- 綠色：主內容 -->
 <div class="content" id="contentArea"></div>
 
-<!-- 收藏抽屜 -->
 <div class="bottom-sheet-overlay" id="collectionsOverlay" onclick="closeCollections()"></div>
 <div class="bottom-sheet" id="collectionsSheet">
   <div class="bottom-sheet-header">
@@ -578,7 +598,6 @@ body {
   </div>
 </div>
 
-<!-- 選單 -->
 <div class="menu-overlay" id="menuOverlay" onclick="closeMenu()"></div>
 <div class="menu-panel" id="menuPanel">
   <div class="menu-header">
@@ -592,12 +611,11 @@ body {
     </div>
     <div class="menu-item" onclick="about(); closeMenu();">
       <div class="menu-item-title">ℹ️ 關於</div>
-      <div class="menu-item-desc">版本 2.0.0</div>
+      <div class="menu-item-desc">版本 2.2.0</div>
     </div>
   </div>
 </div>
 
-<!-- 新增標籤模態框 -->
 <div class="modal-overlay" id="addSectionModal">
   <div class="modal">
     <div class="modal-title">新增標籤</div>
@@ -612,13 +630,12 @@ body {
   </div>
 </div>
 
-<!-- 新增連結模態框 -->
 <div class="modal-overlay" id="addLinkModal">
   <div class="modal">
     <div class="modal-title">新增連結</div>
     <div class="modal-form-group">
       <label class="modal-label">連結名稱</label>
-      <input type="text" class="modal-input" id="linkTitle" placeholder="例如：覺察之境">
+      <input type="text" class="modal-input" id="linkTitle" placeholder="例如：覺察之鏡">
     </div>
     <div class="modal-form-group">
       <label class="modal-label">連結描述</label>
@@ -626,7 +643,7 @@ body {
     </div>
     <div class="modal-form-group">
       <label class="modal-label">連結地址</label>
-      <input type="text" class="modal-input" id="linkUrl" placeholder="https://30ta2.github.io/ap/apple1">
+      <input type="text" class="modal-input" id="linkUrl" placeholder="https://example.com">
     </div>
     <div class="modal-form-group">
       <label class="modal-label">圖示（Emoji）</label>
@@ -639,7 +656,6 @@ body {
   </div>
 </div>
 
-<!-- 藍色：底部導航 -->
 <div class="bottom-nav">
   <div class="nav-item active">
     <div class="nav-icon">📦</div>
@@ -650,53 +666,16 @@ body {
 <script>
 const STORAGE_KEY = 'integrateTool_sections_main';
 
-// 預設標籤和連結
 const DEFAULT_SECTIONS = {
   section_default: {
     name: '我的工具',
     icon: '📦',
     links: [
       {
-        title: '覺察之境',
+        title: '覺察之鏡',
         desc: '冥想與自我覺察工具',
-        url: 'https://30ta2.github.io/ap/apple1',
+        url: 'https://30ta2.github.io/314green/',
         icon: '🧘'
-      },
-      {
-        title: '打卡',
-        desc: '每日打卡記錄系統',
-        url: 'https://30ta2.github.io/ap/apple2',
-        icon: '📅'
-      },
-      {
-        title: '每日時間表',
-        desc: '時間管理與規劃',
-        url: 'https://30ta2.github.io/ap/apple3',
-        icon: '⏰'
-      },
-      {
-        title: '每日任務',
-        desc: '任務清單管理',
-        url: 'https://30ta2.github.io/ap/apple4',
-        icon: '✅'
-      },
-      {
-        title: 'HTML沙盒',
-        desc: '在線HTML編輯器',
-        url: 'https://30ta2.github.io/ap/apple5',
-        icon: '🔧'
-      },
-      {
-        title: 'YT播放器',
-        desc: 'YouTube播放器工具',
-        url: 'https://30ta2.github.io/ap/apple6',
-        icon: '🎵'
-      },
-      {
-        title: '工具代碼鏈',
-        desc: '工具代碼生成器',
-        url: 'https://30ta2.github.io/ap/app',
-        icon: '⚙️'
       }
     ]
   }
@@ -799,9 +778,12 @@ function createLinkCard(link, sectionId, index) {
     </div>
     <div class="tool-arrow">›</div>
   `;
+  
   card.onclick = () => {
     if (link.url && link.url.startsWith('http')) {
-      window.open(link.url, '_blank');
+      // 關鍵：用 window.location.href 直接導航到PWA應用
+      // Safari 會偵測到 manifest.json 並以 standalone 模式啟動
+      window.location.href = link.url;
     }
   };
 
@@ -927,7 +909,7 @@ function clearCache() {
 }
 
 function about() {
-  alert('整合工具 v2.0.0\n\n功能：\n✅ 新增標籤\n✅ 新增連結\n✅ 完全本地存儲');
+  alert('整合工具 v2.2.0\n\n功能：\n✅ 新增標籤\n✅ 新增連結\n✅ PWA 全屏啟動\n✅ 完全本地存儲');
 }
 
 window.addEventListener('DOMContentLoaded', init);
