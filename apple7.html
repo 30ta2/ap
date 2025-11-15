@@ -611,7 +611,7 @@ html, body {
     </div>
     <div class="menu-item" onclick="about(); closeMenu();">
       <div class="menu-item-title">ℹ️ 關於</div>
-      <div class="menu-item-desc">版本 2.2.0</div>
+      <div class="menu-item-desc">版本 3.0.0</div>
     </div>
   </div>
 </div>
@@ -674,8 +674,44 @@ const DEFAULT_SECTIONS = {
       {
         title: '覺察之鏡',
         desc: '冥想與自我覺察工具',
-        url: 'https://30ta2.github.io/314green/',
+        url: 'https://30ta2.github.io/ap/apple1',
         icon: '🧘'
+      },
+      {
+        title: '打卡',
+        desc: '每日打卡記錄系統',
+        url: 'https://30ta2.github.io/ap/apple2',
+        icon: '📅'
+      },
+      {
+        title: '每日時間表',
+        desc: '時間管理與規劃',
+        url: 'https://30ta2.github.io/ap/apple3',
+        icon: '⏰'
+      },
+      {
+        title: '每日任務',
+        desc: '任務清單管理',
+        url: 'https://30ta2.github.io/ap/apple4',
+        icon: '✅'
+      },
+      {
+        title: 'HTML沙盒',
+        desc: '在線HTML編輯器',
+        url: 'https://30ta2.github.io/ap/apple5',
+        icon: '🔧'
+      },
+      {
+        title: 'YT播放器',
+        desc: 'YouTube播放器工具',
+        url: 'https://30ta2.github.io/ap/apple6',
+        icon: '🎵'
+      },
+      {
+        title: '工具代碼鏈',
+        desc: '工具代碼生成器',
+        url: 'https://30ta2.github.io/ap/app',
+        icon: '⚙️'
       }
     ]
   }
@@ -781,8 +817,6 @@ function createLinkCard(link, sectionId, index) {
   
   card.onclick = () => {
     if (link.url && link.url.startsWith('http')) {
-      // 關鍵：用 window.location.href 直接導航到PWA應用
-      // Safari 會偵測到 manifest.json 並以 standalone 模式啟動
       window.location.href = link.url;
     }
   };
@@ -909,7 +943,7 @@ function clearCache() {
 }
 
 function about() {
-  alert('整合工具 v2.2.0\n\n功能：\n✅ 新增標籤\n✅ 新增連結\n✅ PWA 全屏啟動\n✅ 完全本地存儲');
+  alert('整合工具 v3.0.0\n\n功能：\n✅ 新增標籤\n✅ 新增連結\n✅ PWA 全屏啟動\n✅ 完全本地存儲\n\n已預載 7 個應用');
 }
 
 window.addEventListener('DOMContentLoaded', init);
