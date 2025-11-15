@@ -556,42 +556,68 @@ html, body {
   font-size: 22px;
 }
 
-/* iframe 容器 */
-#appFrame {
+/* iframe 全屏容器 - 完全適配視口 */
+.frame-container {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  border: none;
   display: none;
   z-index: 2000;
+  flex-direction: column;
+  background: #000;
+  padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
 }
 
-#appFrame.show {
-  display: block;
+.frame-container.show {
+  display: flex;
+}
+
+.frame-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  margin-bottom: 8px;
+  flex-shrink: 0;
+}
+
+.frame-title {
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  flex: 1;
+  text-align: center;
 }
 
 .frame-close-btn {
-  position: fixed;
-  top: 12px;
-  left: 12px;
-  width: 40px;
-  height: 40px;
-  background: rgba(0, 0, 0, 0.7);
+  width: 36px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.2);
   border: none;
   border-radius: 50%;
   color: #fff;
-  font-size: 24px;
+  font-size: 20px;
   cursor: pointer;
-  z-index: 2001;
-  display: none;
+  display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.2s;
 }
 
-.frame-close-btn.show {
-  display: flex;
+.frame-close-btn:active {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+#appFrame {
+  flex: 1;
+  border: none;
+  border-radius: 12px;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 }
 
 @supports (-webkit-touch-callout: none) {
@@ -649,7 +675,7 @@ html, body {
     </div>
     <div class="menu-item" onclick="about(); closeMenu();">
       <div class="menu-item-title">ℹ️ 關於</div>
-      <div class="menu-item-desc">版本 4.0.0</div>
+      <div class="menu-item-desc">版本 4.1.0</div>
     </div>
   </div>
 </div>
@@ -694,9 +720,15 @@ html, body {
   </div>
 </div>
 
-<!-- iframe 容器 -->
-<iframe id="appFrame"></iframe>
-<button class="frame-close-btn" onclick="closeFrame()">✕</button>
+<!-- iframe 全屏容器 -->
+<div class="frame-container" id="frameContainer">
+  <div class="frame-header">
+    <div style="width: 36px;"></div>
+    <div class="frame-title" id="frameTitle"></div>
+    <button class="frame-close-btn" onclick="closeFrame()">✕</button>
+  </div>
+  <iframe id="appFrame"></iframe>
+</div>
 
 <div class="bottom-nav">
   <div class="nav-item active">
@@ -859,7 +891,7 @@ function createLinkCard(link, sectionId, index) {
   
   card.onclick = () => {
     if (link.url && link.url.startsWith('http')) {
-      openFrame(link.url);
+      openFrame(link.url, link.title);
     }
   };
 
@@ -876,36 +908,28 @@ function createLinkCard(link, sectionId, index) {
 }
 
 // iframe 相關函數
-function openFrame(url) {
+function openFrame(url, title = '應用') {
+  const frameContainer = document.getElementById('frameContainer');
   const frame = document.getElementById('appFrame');
-  const closeBtn = document.querySelector('.frame-close-btn');
+  const frameTitle = document.getElementById('frameTitle');
   
+  frameTitle.textContent = title;
   frame.src = url;
-  frame.classList.add('show');
-  closeBtn.classList.add('show');
+  frameContainer.classList.add('show');
   
-  // 隱藏主要內容
-  document.querySelector('.header').style.display = 'none';
-  document.querySelector('.search-container').style.display = 'none';
-  document.querySelector('.sections-container').style.display = 'none';
-  document.querySelector('.content').style.display = 'none';
-  document.querySelector('.bottom-nav').style.display = 'none';
+  // 禁用主頁面滾動
+  document.body.style.overflow = 'hidden';
 }
 
 function closeFrame() {
+  const frameContainer = document.getElementById('frameContainer');
   const frame = document.getElementById('appFrame');
-  const closeBtn = document.querySelector('.frame-close-btn');
   
   frame.src = '';
-  frame.classList.remove('show');
-  closeBtn.classList.remove('show');
+  frameContainer.classList.remove('show');
   
-  // 顯示主要內容
-  document.querySelector('.header').style.display = 'flex';
-  document.querySelector('.search-container').style.display = 'block';
-  document.querySelector('.sections-container').style.display = 'block';
-  document.querySelector('.content').style.display = 'block';
-  document.querySelector('.bottom-nav').style.display = 'flex';
+  // 恢復主頁面滾動
+  document.body.style.overflow = '';
 }
 
 function openAddSectionModal() {
@@ -1018,14 +1042,14 @@ function clearCache() {
 }
 
 function about() {
-  alert('整合工具 v4.0.0\n\n功能：\n✅ 新增標籤\n✅ 新增連結\n✅ iframe 全屏容器\n✅ 完全本地存儲\n\n已預載 7 個應用');
+  alert('整合工具 v4.1.0\n\n功能：\n✅ 新增標籤\n✅ 新增連結\n✅ iframe 全屏容器\n✅ 完全本地存儲\n✅ 適配手機視口\n\n已預載 7 個應用');
 }
 
 window.addEventListener('DOMContentLoaded', init);
 
-// 鍵盤返回按鈕（Esc 鍵關閉）
+// Esc 鍵關閉
 document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape' && document.getElementById('appFrame').classList.contains('show')) {
+  if (e.key === 'Escape' && document.getElementById('frameContainer').classList.contains('show')) {
     closeFrame();
   }
 });
