@@ -556,6 +556,44 @@ html, body {
   font-size: 22px;
 }
 
+/* iframe 容器 */
+#appFrame {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: none;
+  z-index: 2000;
+}
+
+#appFrame.show {
+  display: block;
+}
+
+.frame-close-btn {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  width: 40px;
+  height: 40px;
+  background: rgba(0, 0, 0, 0.7);
+  border: none;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 24px;
+  cursor: pointer;
+  z-index: 2001;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.frame-close-btn.show {
+  display: flex;
+}
+
 @supports (-webkit-touch-callout: none) {
   body {
     min-height: -webkit-fill-available;
@@ -611,7 +649,7 @@ html, body {
     </div>
     <div class="menu-item" onclick="about(); closeMenu();">
       <div class="menu-item-title">ℹ️ 關於</div>
-      <div class="menu-item-desc">版本 3.0.0</div>
+      <div class="menu-item-desc">版本 4.0.0</div>
     </div>
   </div>
 </div>
@@ -655,6 +693,10 @@ html, body {
     </div>
   </div>
 </div>
+
+<!-- iframe 容器 -->
+<iframe id="appFrame"></iframe>
+<button class="frame-close-btn" onclick="closeFrame()">✕</button>
 
 <div class="bottom-nav">
   <div class="nav-item active">
@@ -817,7 +859,7 @@ function createLinkCard(link, sectionId, index) {
   
   card.onclick = () => {
     if (link.url && link.url.startsWith('http')) {
-      window.location.href = link.url;
+      openFrame(link.url);
     }
   };
 
@@ -831,6 +873,39 @@ function createLinkCard(link, sectionId, index) {
   });
 
   return card;
+}
+
+// iframe 相關函數
+function openFrame(url) {
+  const frame = document.getElementById('appFrame');
+  const closeBtn = document.querySelector('.frame-close-btn');
+  
+  frame.src = url;
+  frame.classList.add('show');
+  closeBtn.classList.add('show');
+  
+  // 隱藏主要內容
+  document.querySelector('.header').style.display = 'none';
+  document.querySelector('.search-container').style.display = 'none';
+  document.querySelector('.sections-container').style.display = 'none';
+  document.querySelector('.content').style.display = 'none';
+  document.querySelector('.bottom-nav').style.display = 'none';
+}
+
+function closeFrame() {
+  const frame = document.getElementById('appFrame');
+  const closeBtn = document.querySelector('.frame-close-btn');
+  
+  frame.src = '';
+  frame.classList.remove('show');
+  closeBtn.classList.remove('show');
+  
+  // 顯示主要內容
+  document.querySelector('.header').style.display = 'flex';
+  document.querySelector('.search-container').style.display = 'block';
+  document.querySelector('.sections-container').style.display = 'block';
+  document.querySelector('.content').style.display = 'block';
+  document.querySelector('.bottom-nav').style.display = 'flex';
 }
 
 function openAddSectionModal() {
@@ -943,10 +1018,17 @@ function clearCache() {
 }
 
 function about() {
-  alert('整合工具 v3.0.0\n\n功能：\n✅ 新增標籤\n✅ 新增連結\n✅ PWA 全屏啟動\n✅ 完全本地存儲\n\n已預載 7 個應用');
+  alert('整合工具 v4.0.0\n\n功能：\n✅ 新增標籤\n✅ 新增連結\n✅ iframe 全屏容器\n✅ 完全本地存儲\n\n已預載 7 個應用');
 }
 
 window.addEventListener('DOMContentLoaded', init);
+
+// 鍵盤返回按鈕（Esc 鍵關閉）
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && document.getElementById('appFrame').classList.contains('show')) {
+    closeFrame();
+  }
+});
 </script>
 
 </body>
