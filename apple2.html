@@ -715,7 +715,7 @@ function updateIdleTime() {
   // 閒置時間 = 今日經過時間 - 完成的任務時間（支持負數）
   idleMs = idleMs - totalTaskMs;
   
-  idleEl.textContent = `⏳ 檔案閒置時間：${formatDuration(idleMs)}`;
+  idleEl.textContent = `⏳ 閒置時間：${formatDuration(idleMs)}`;
 }
 
 // 每秒更新閒置時間
@@ -755,7 +755,7 @@ function generateDailyReport() {
   }
   
   html += `<tr><td><b>總時長</b></td><td>${formatDuration(totalSec * 1000)}</td></tr>`;
-  html += `<tr><td><b>檔案閒置時間</b></td><td>${formatDuration(idleSec * 1000)}</td></tr>`;
+  html += `<tr><td><b>閒置時間</b></td><td>${formatDuration(idleSec * 1000)}</td></tr>`;
   html += "</table>";
   
   document.getElementById("reportOutput").innerHTML = html;
