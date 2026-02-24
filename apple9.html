@@ -325,15 +325,15 @@
         <div class="stats-container">
             <div class="stat-card">
                 <div class="stat-label">項目數量</div>
-                <div class="stat-value" id="statCount">12</div>
+                <div class="stat-value" id="statCount">0</div>
             </div>
             <div class="stat-card">
                 <div class="stat-label">年度總支出</div>
-                <div class="stat-value" id="statTotal">78,530</div>
+                <div class="stat-value" id="statTotal">0</div>
             </div>
             <div class="stat-card">
                 <div class="stat-label">平均月支出</div>
-                <div class="stat-value" id="statMonthly">6,544</div>
+                <div class="stat-value" id="statMonthly">0</div>
             </div>
         </div>
 
@@ -347,7 +347,7 @@
         <div class="controls">
             <input type="text" class="search-box" id="searchBox" placeholder="搜尋支出項目...">
             <button class="btn-add" onclick="openAddModal()">+ 新增項目</button>
-            <button class="btn-export" onclick="exportData()">📥 匯出CSV</button>
+            <button class="btn-export" onclick="exportData()">📥 匯出文檔</button>
         </div>
 
         <!-- 支出表格 -->
@@ -373,7 +373,7 @@
         <div class="total-section">
             <div class="total-row">
                 <div class="total-label">💰 年度總支出</div>
-                <div class="total-value" id="displayTotal">78,530 元 / 年</div>
+                <div class="total-value" id="displayTotal">0 元 / 年</div>
             </div>
         </div>
 
@@ -428,22 +428,7 @@
     </div>
 
     <script>
-        // 預設支出資料
-        const DEFAULT_ITEMS = [
-            { id: 1, name: "健保", frequency: "每月", amount: 850, times: 12, remark: "每月固定" },
-            { id: 2, name: "電話費", frequency: "每月", amount: 700, times: 12, remark: "每月固定" },
-            { id: 3, name: "停車費", frequency: "每月", amount: 2000, times: 12, remark: "每月固定" },
-            { id: 4, name: "水費", frequency: "每2個月", amount: 300, times: 6, remark: "雙月" },
-            { id: 5, name: "電費", frequency: "每2個月", amount: 1800, times: 6, remark: "雙月" },
-            { id: 6, name: "管理費", frequency: "每半年", amount: 4070, times: 2, remark: "4月/10月" },
-            { id: 7, name: "車檢", frequency: "每年", amount: 750, times: 1, remark: "年度" },
-            { id: 8, name: "牌照稅", frequency: "每年", amount: 7120, times: 1, remark: "4月" },
-            { id: 9, name: "燃料稅", frequency: "每年", amount: 4800, times: 1, remark: "7月" },
-            { id: 10, name: "房屋稅", frequency: "每年", amount: 1000, times: 1, remark: "5月" },
-            { id: 11, name: "地價稅", frequency: "每年", amount: 120, times: 1, remark: "11月" },
-            { id: 12, name: "強制險", frequency: "每年", amount: 1400, times: 1, remark: "11月" }
-        ];
-
+        // 移除預設資料，初始為空
         let expenseItems = [];
         const freqMap = { "每月":12, "每2個月":6, "每3個月":4, "每半年":2, "每年":1 };
 
@@ -454,10 +439,10 @@
             setupEventListeners();
         });
 
-        // 加載本地存儲資料
+        // 加載本地存儲資料，若無則為空陣列
         function loadData() {
             const saved = localStorage.getItem('expenseItems');
-            expenseItems = saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(DEFAULT_ITEMS));
+            expenseItems = saved ? JSON.parse(saved) : [];
         }
 
         // 保存資料到本地
@@ -691,30 +676,48 @@
             document.getElementById('aiSuggestions').textContent = suggestions;
         }
 
-        // 匯出CSV數據
+        // 匯出整齊文字文檔（非表格）
         function exportData() {
-            const headers = ["項目", "繳費頻率", "單次金額", "次數/年", "年支出", "備註"];
-            const rows = expenseItems.map(item => [
-                item.name,
-                item.frequency,
-                item.amount,
-                item.times,
-                item.amount * item.times,
-                item.remark || ''
-            ]);
+            const total = expenseItems.reduce((sum, item) => sum + (item.amount * item.times), 0);
+            const monthlyAvg = Math.round(total / 12);
 
-            const csvContent = "data:text/csv;charset=utf-8," 
-                + headers.join(",") 
-                + "\n" 
-                + rows.map(row => row.join(",")).join("\n");
+            let content = `年度固定支出總表\n`;
+            content += `====================\n\n`;
+            content += `📊 統計摘要\n`;
+            content += `• 項目數量：${expenseItems.length} 項\n`;
+            content += `• 年度總支出：${total.toLocaleString()} 元\n`;
+            content += `• 平均月支出：${monthlyAvg.toLocaleString()} 元\n\n`;
+            content += `📋 支出明細\n`;
+            content += `--------------------------------------------------------------------\n`;
+            content += `項目名稱        繳費頻率    單次金額    次數/年    年支出        備註\n`;
+            content += `--------------------------------------------------------------------\n`;
 
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", `年度固定支出總表_${new Date().toISOString().split('T')[0]}.csv`);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            expenseItems.forEach(item => {
+                const annual = item.amount * item.times;
+                // 格式化每列，保證對齊
+                const name = item.name.padEnd(12, ' ');
+                const freq = item.frequency.padEnd(8, ' ');
+                const amount = item.amount.toString().padStart(8, ' ');
+                const times = item.times.toString().padStart(8, ' ');
+                const annualStr = annual.toLocaleString().padStart(10, ' ');
+                const remark = (item.remark || '').padEnd(10, ' ');
+                content += `${name} ${freq} ${amount} ${times} ${annualStr} ${remark}\n`;
+            });
+
+            content += `--------------------------------------------------------------------\n`;
+            content += `年度總支出：${total.toLocaleString()} 元\n`;
+            content += `平均月支出：${monthlyAvg.toLocaleString()} 元\n`;
+            content += `\n生成時間：${new Date().toLocaleString('zh-TW')}\n`;
+
+            const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `年度固定支出總表_${new Date().toISOString().split('T')[0]}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
         }
     </script>
 </body>
