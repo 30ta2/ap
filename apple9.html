@@ -9,9 +9,6 @@
     <meta name="apple-mobile-web-app-title" content="年度支出總表">
     <meta name="description" content="年度固定支出總表 - PWA App">
     
-    <!-- Manifest -->
-    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIue0nOeWsOW6k+eggOmHkOeVjOWHvSIsICJzaG9ydF9uYW1lIjogIue0nOeWsOW6k+eggCIsICJzdGFydF91cmwiOiAiLiIsICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLCAic3RhcnRfdXJsIjogIi8iLCAiYmFja2dyb3VuZF9jb2xvciI6ICIjMDAwMDAwIiwgInRoZW1lX2NvbG9yIjogIiMwMDAwMDAiLCAib3JpZW50YXRpb24iOiAicG9ydHJhaXQtcHJpbWFyeSIsICJpY29ucyI6IFt7InNyYyI6ICJkYXRhOmltYWdlL3N2Zyt4bWw7YmFzZTY0LFBITjJaeUIzYVdSMGREMGlNVE13SWdCbGVHRnRjR3hsSUQwOElpQTJJU0JtYVd4c1BTSWpJREF3SURNM0l5QXdJREF3SURBMklpOENQMzgrUEhOMlp5QjNhV1IwZEQwaU1qQWlJR2x3SUQwOElpQTJJU0JtYVd4c1BTSWpJREF3SURNM0l5QXdJREF3SURBMklpOENQMzg9IiwgInR5cGUiOiAiaW1hZ2Uvc3ZnK3htbCIsICJzaXplcyI6ICJhbnkiLCAicHVycG9zZSI6ICJhbnkgbWFza2FibGUifV19">
-    
     <title>年度支出總表</title>
     <style>
         * {
@@ -441,45 +438,6 @@
     </div>
 
     <script>
-        // Service Worker 註冊（PWA 核心）
-        if ('serviceWorker' in navigator) {
-            // 內嵌 Service Worker 程式碼
-            const swCode = `
-                const CACHE_NAME = 'expense-tracker-v1';
-                const urlsToCache = ['/'];
-
-                self.addEventListener('install', event => {
-                    event.waitUntil(
-                        caches.open(CACHE_NAME).then(cache => {
-                            return cache.add(self.location.href).catch(() => {});
-                        })
-                    );
-                    self.skipWaiting();
-                });
-
-                self.addEventListener('activate', event => {
-                    event.waitUntil(clients.claim());
-                });
-
-                self.addEventListener('fetch', event => {
-                    event.respondWith(
-                        caches.match(event.request).then(response => {
-                            return response || fetch(event.request).catch(() => {
-                                return new Response('離線模式');
-                            });
-                        })
-                    );
-                });
-            `;
-
-            const blob = new Blob([swCode], { type: 'application/javascript' });
-            const swUrl = URL.createObjectURL(blob);
-
-            navigator.serviceWorker.register(swUrl, { scope: '/' }).catch(err => {
-                console.log('Service Worker 註冊失敗:', err);
-            });
-        }
-
         // 移除預設資料，初始為空
         let expenseItems = [];
         const freqMap = { "每月":12, "每2個月":6, "每3個月":4, "每半年":2, "每年":1 };
