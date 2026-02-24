@@ -29,9 +29,6 @@
         }
         input, select, button {
             font-size: 16px;
-            -webkit-tap-highlight-color: transparent;
-            pointer-events: auto;
-            -webkit-user-select: text;
         }
         .container {
             max-width: 100%;
@@ -258,11 +255,9 @@
             align-items: center;
             justify-content: center;
             padding: 20px;
-            pointer-events: none;
         }
         .modal.active {
             display: flex;
-            pointer-events: auto;
         }
         .modal-content {
             background: #111111;
@@ -300,9 +295,6 @@
             border-radius: 4px;
             font-size: 16px;
             min-height: 44px;
-            -webkit-appearance: none;
-            appearance: none;
-            pointer-events: auto !important;
         }
         .form-actions {
             display: flex;
@@ -615,10 +607,6 @@
             // 點擊模態框外部關閉
             document.getElementById('itemModal').addEventListener('click', function(e) {
                 if (e.target === this) closeModal();
-            });
-            // 防止表單內聚焦事件被攔截
-            document.getElementById('itemForm').addEventListener('click', function(e) {
-                e.stopPropagation();
             });
         }
 
