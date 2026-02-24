@@ -2,7 +2,7 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no, minimum-scale=1, maximum-scale=1">
     <meta name="theme-color" content="#000000">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -17,257 +17,355 @@
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
         }
+
+        /* 🔥 超級關鍵：完全固定定位系統 */
+        html {
+            position: fixed;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+        }
+
         body {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
             background: #000000;
             color: #FFFFFF;
-            font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif;
-            padding: 12px 15px;
-            min-height: 100vh;
-            padding-top: max(12px, env(safe-area-inset-top));
-            padding-bottom: max(12px, env(safe-area-inset-bottom));
-            padding-left: max(12px, env(safe-area-inset-left));
-            padding-right: max(12px, env(safe-area-inset-right));
-            touch-action: auto;
-            max-width: 393px;
-            margin: 0 auto;
-            position: relative;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft JhengHei', sans-serif;
+            overflow: hidden;
+            -webkit-user-select: none;
+            user-select: none;
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
+            padding-left: env(safe-area-inset-left);
+            padding-right: env(safe-area-inset-right);
+        }
+
+        /* 🔥 主容器：可滾動 */
+        .page-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            padding: 12px;
+            padding-top: calc(12px + env(safe-area-inset-top));
             z-index: 1;
         }
-        /* 核心：解除所有输入相关元素的事件限制 */
-        input, select, button, textarea {
-            font-size: 16px;
-            -webkit-user-select: auto;
-            user-select: auto;
-            touch-action: auto;
+
+        /* 🔥 輸入框全局設定 - 最激進的設定 */
+        input,
+        select,
+        button,
+        textarea {
+            font-size: 16px !important;
+            font-family: inherit !important;
+            -webkit-user-select: text !important;
+            user-select: text !important;
+            -webkit-user-modify: read-write-plaintext-only !important;
+            -webkit-appearance: none !important;
+            appearance: none !important;
+            -webkit-touch-callout: default !important;
+            touch-action: manipulation !important;
             pointer-events: auto !important;
+        }
+
+        input:focus,
+        select:focus,
+        button:focus,
+        textarea:focus {
+            outline: 2px solid #38bdf8 !important;
+            outline-offset: 2px !important;
+        }
+
+        input,
+        select,
+        textarea {
             border: none;
             outline: none;
+            background: #000000;
+            color: #FFFFFF;
+            border: 1px solid #444444;
+            border-radius: 6px;
+            padding: 12px;
+            min-height: 44px;
         }
-        input:focus, select:focus {
-            outline: 2px solid #FFFFFF !important;
-            outline-offset: 1px;
+
+        input::placeholder {
+            color: #666666;
         }
-        .container {
-            width: 100%;
-            margin: 0 auto;
-            position: relative;
-            z-index: 2;
+
+        select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23FFFFFF' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 16px;
+            padding-right: 40px;
         }
+
+        button {
+            cursor: pointer;
+            font-weight: 600;
+            border: none;
+            outline: none;
+            padding: 12px 16px;
+            min-height: 44px;
+            border-radius: 6px;
+            background: #FFFFFF;
+            color: #000000;
+            transition: background 200ms ease;
+        }
+
+        button:active {
+            opacity: 0.85;
+        }
+
+        button.secondary {
+            background: #333333;
+            color: #FFFFFF;
+            border: 1px solid #555555;
+        }
+
+        button.secondary:active {
+            background: #444444;
+        }
+
+        /* 內容盒子 */
+        .box {
+            background: #111111;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+            border: 1px solid #222222;
+        }
+
+        .box-title {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: #FFFFFF;
+        }
+
+        .box-subtitle {
+            font-size: 12px;
+            color: #AAAAAA;
+            margin-bottom: 8px;
+        }
+
+        /* 頁頭 */
         .header {
             display: flex;
             align-items: center;
             gap: 8px;
             margin-bottom: 16px;
-            padding-bottom: 8px;
+            padding-bottom: 12px;
             border-bottom: 1px solid #333333;
         }
+
         .header-icon {
-            font-size: 24px;
+            font-size: 28px;
         }
+
         .header h1 {
-            font-size: 20px;
+            font-size: 22px;
             font-weight: 700;
             color: #FFFFFF;
         }
-        .stats-container {
+
+        /* 統計卡片 */
+        .stats-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
+            gap: 12px;
             margin-bottom: 16px;
-            padding: 12px;
-            background: #111111;
-            border-radius: 6px;
         }
+
         .stat-card {
+            background: #1A1A1A;
+            border-radius: 6px;
+            padding: 12px;
             text-align: center;
-            padding: 6px 0;
-            border-right: 1px solid #333333;
+            border: 1px solid #333333;
         }
-        .stat-card:last-child {
-            border-right: none;
-        }
+
         .stat-label {
             font-size: 10px;
             color: #AAAAAA;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
+            text-transform: uppercase;
         }
+
         .stat-value {
-            font-size: 16px;
+            font-size: 18px;
             font-weight: 700;
-            color: #FFFFFF;
+            color: #38bdf8;
         }
-        /* 月收入區域 - 14Pro窄屏适配，输入框缩短 */
+
+        /* 收入區域 */
         .income-section {
-            background: #111111;
-            border-radius: 6px;
-            padding: 12px 15px;
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: nowrap;
-            position: relative;
-            z-index: 3;
-        }
-        .income-label {
-            font-size: 14px;
-            color: #AAAAAA;
-            min-width: 70px;
-            white-space: nowrap;
-        }
-        .income-input {
-            flex: 0 1 140px;
-            padding: 8px 10px;
-            border: 1px solid #444444;
-            background: #000000;
-            color: #FFFFFF;
-            border-radius: 4px;
-            font-size: 16px;
-            min-width: 140px;
-        }
-        .btn-generate-ai {
-            flex: 0 1 auto;
-            background: #FFFFFF;
-            color: #000000;
-            padding: 8px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 12px;
-            white-space: nowrap;
-        }
-        .btn-generate-ai:hover {
-            background: #E0E0E0;
-        }
-        .controls {
             display: flex;
             gap: 8px;
-            margin-bottom: 12px;
+            align-items: center;
+            flex-wrap: nowrap;
+        }
+
+        .income-section input {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .income-section button {
+            flex: 0 0 auto;
+            width: 60px;
+            padding: 12px;
+        }
+
+        /* 按鈕區域 */
+        .button-row {
+            display: flex;
+            gap: 8px;
             flex-wrap: wrap;
-            position: relative;
-            z-index: 3;
+            margin-bottom: 16px;
         }
-        .search-box {
-            flex: 1 1 auto;
-            min-width: 200px;
-            padding: 8px 10px;
-            border: 1px solid #444444;
-            background: #000000;
-            color: #FFFFFF;
-            border-radius: 4px;
-            font-size: 16px;
+
+        .button-row button {
+            flex: 1;
+            min-width: 120px;
         }
-        .btn-add, .btn-export {
-            padding: 8px 10px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 12px;
-            white-space: nowrap;
-            flex: 0 1 auto;
-        }
-        .btn-add {
-            background: #FFFFFF;
+
+        .button-add {
+            background: #38bdf8;
             color: #000000;
+            font-weight: 700;
         }
-        .btn-export {
-            background: #111111;
-            color: #FFFFFF;
-            border: 1px solid #444444;
+
+        .button-add:active {
+            background: #0ea5e9;
         }
-        .table-section {
-            background: #000000;
-            border-radius: 6px;
+
+        /* 表格 */
+        .table-wrapper {
             overflow-x: auto;
-            margin-bottom: 20px;
-            padding: 0 2px;
-            position: relative;
-            z-index: 3;
+            -webkit-overflow-scrolling: touch;
         }
+
         table {
             width: 100%;
             border-collapse: collapse;
             font-size: 12px;
         }
+
         thead th {
-            padding: 10px 6px;
+            padding: 10px 8px;
             text-align: left;
             font-weight: 600;
             color: #FFFFFF;
-            border-bottom: 1px solid #333333;
+            border-bottom: 2px solid #333333;
             white-space: nowrap;
+            background: #0A0A0A;
         }
+
         tbody td {
-            padding: 10px 6px;
+            padding: 12px 8px;
             color: #FFFFFF;
             border-bottom: 1px solid #1A1A1A;
             white-space: nowrap;
         }
-        .clickable-amount {
-            cursor: pointer;
-            font-weight: 600;
+
+        tbody tr:hover {
+            background: #1A1A1A;
         }
-        .clickable-amount:hover {
-            text-decoration: underline;
-            color: #E0E0E0;
+
+        .col-name {
+            font-weight: 500;
+            color: #38bdf8;
         }
-        .col-freq, .col-times, .col-remark {
+
+        .col-freq,
+        .col-times,
+        .col-remark {
             color: #AAAAAA;
+            font-size: 11px;
         }
+
+        .col-amount {
+            font-weight: 600;
+            color: #FFFFFF;
+            text-align: right;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 16px;
+            color: #666666;
+            font-size: 14px;
+        }
+
+        /* 總計區域 */
         .total-section {
-            background: #000000;
-            padding: 12px 0;
-            border-top: 1px solid #333333;
-            margin-top: 8px;
+            background: #1A1A1A;
+            border: 1px solid #333333;
+            border-radius: 6px;
+            padding: 16px;
             margin-bottom: 16px;
-            position: relative;
-            z-index: 3;
         }
+
         .total-row {
             display: flex;
-            align-items: center;
             justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
         }
+
+        .total-row:last-child {
+            margin-bottom: 0;
+        }
+
         .total-label {
+            color: #AAAAAA;
+            font-size: 13px;
+        }
+
+        .total-value {
             font-size: 16px;
             font-weight: 700;
-            color: #FFFFFF;
-            display: flex;
-            align-items: center;
-            gap: 6px;
+            color: #38bdf8;
         }
-        .total-value {
-            font-size: 20px;
-            font-weight: 700;
-            color: #FFFFFF;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
+
+        /* AI 面板 */
         .ai-panel {
-            background: #111111;
+            background: #1A1A1A;
+            border-left: 3px solid #38bdf8;
             border-radius: 6px;
-            padding: 12px 15px;
-            margin-top: 0;
-            border-left: 3px solid #FFFFFF;
-            position: relative;
-            z-index: 3;
+            padding: 16px;
+            margin-bottom: 20px;
         }
+
         .ai-header {
             display: flex;
             align-items: center;
             gap: 6px;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             font-weight: 600;
             font-size: 13px;
+            color: #38bdf8;
         }
+
         .ai-content {
             font-size: 12px;
             color: #DDDDDD;
-            line-height: 1.7;
+            line-height: 1.8;
             white-space: pre-line;
+            -webkit-user-select: text;
+            user-select: text;
         }
-        /* 弹窗核心：层级最高，解除所有触摸限制 */
+
+        /* 🔥 模態窗口 - 最高優先級 */
         .modal {
             display: none;
             position: fixed;
@@ -275,24 +373,38 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.95);
-            z-index: 99999;
+            background: rgba(0, 0, 0, 0.98);
+            z-index: 999999;
+            flex-direction: column;
             align-items: center;
-            justify-content: center;
-            padding: 20px 15px;
-            touch-action: auto;
-            pointer-events: auto !important;
+            justify-content: flex-start;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+            padding-top: max(20px, env(safe-area-inset-top));
         }
+
         .modal.active {
             display: flex;
         }
+
+        .modal-backdrop {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: -1;
+        }
+
         .modal-content {
             background: #111111;
             border: 1px solid #333333;
-            border-radius: 8px;
-            padding: 20px 22px;
+            border-radius: 12px;
+            padding: 24px;
             width: 100%;
             max-width: 360px;
+            margin: 20px auto;
             position: relative;
             z-index: 999999;
             pointer-events: auto !important;
@@ -300,78 +412,110 @@
             user-select: auto;
             touch-action: auto;
         }
+
         .modal-header {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 700;
-            margin-bottom: 18px;
+            margin-bottom: 20px;
             color: #FFFFFF;
         }
+
         .form-group {
-            margin-bottom: 14px;
-            padding: 3px 0;
+            margin-bottom: 16px;
+            padding: 0;
             position: relative;
             z-index: 999999;
         }
+
         .form-group label {
             display: block;
-            margin-bottom: 5px;
-            font-size: 12px;
+            margin-bottom: 8px;
+            font-size: 13px;
             color: #AAAAAA;
+            font-weight: 500;
         }
-        .form-group input, .form-group select {
+
+        .form-group input,
+        .form-group select {
             width: 100%;
-            padding: 10px 12px;
+            padding: 12px;
             border: 1px solid #444444;
             background: #000000;
             color: #FFFFFF;
-            border-radius: 4px;
+            border-radius: 6px;
             font-size: 16px;
             min-height: 44px;
             -webkit-appearance: none;
             appearance: none;
+            -webkit-user-select: text !important;
+            user-select: text !important;
         }
+
+        .form-group input::selection,
+        .form-group select::selection {
+            background: #38bdf8;
+            color: #000000;
+        }
+
         .form-actions {
             display: flex;
             gap: 8px;
-            margin-top: 20px;
+            margin-top: 24px;
+            flex-direction: row;
         }
-        .btn-save, .btn-cancel, .btn-delete {
+
+        .form-actions button {
             flex: 1;
-            padding: 9px 0;
-            border-radius: 4px;
+            padding: 12px;
+            min-height: 44px;
+            border: none;
+            border-radius: 6px;
             cursor: pointer;
             font-weight: 600;
-            font-size: 13px;
-            text-align: center;
+            font-size: 14px;
         }
+
         .btn-save {
-            background: #FFFFFF;
+            background: #38bdf8;
             color: #000000;
         }
+
+        .btn-save:active {
+            background: #0ea5e9;
+        }
+
         .btn-cancel {
-            background: #1A1A1A;
+            background: #333333;
             color: #FFFFFF;
-            border: 1px solid #444444;
+            border: 1px solid #555555;
         }
+
+        .btn-cancel:active {
+            background: #444444;
+        }
+
         .btn-delete {
-            background: #FF3B30;
+            background: #ef4444;
             color: #FFFFFF;
+            margin-top: 12px;
         }
-        .btn-delete:hover {
-            background: #CC2E25;
-        }
-        .btn-save:hover, .btn-cancel:hover {
-            opacity: 0.9;
+
+        .btn-delete:active {
+            background: #dc2626;
         }
     </style>
 </head>
 <body>
-    <div class="container">
+    <!-- 主頁面容器 -->
+    <div class="page-wrapper">
+        <!-- 頁頭 -->
         <div class="header">
             <div class="header-icon">💰</div>
             <h1>年度支出總表</h1>
         </div>
-        <div class="stats-container">
+
+        <!-- 統計卡片 -->
+        <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-label">項目數量</div>
                 <div class="stat-value" id="statCount">0</div>
@@ -385,61 +529,80 @@
                 <div class="stat-value" id="statMonthly">0</div>
             </div>
         </div>
-        <!-- 月收入输入框 -->
-        <div class="income-section">
-            <label class="income-label">每月收入：</label>
-            <input type="number" class="income-input" id="monthlyIncome" placeholder="請輸入金額" value="" autocomplete="off">
-            <button class="btn-generate-ai" onclick="generateAISuggestions()">🤖 生成建議</button>
+
+        <!-- 月收入區域 -->
+        <div class="box">
+            <div class="box-subtitle">💰 每月收入</div>
+            <div class="income-section">
+                <input type="number" id="monthlyIncome" placeholder="請輸入金額" autocomplete="off">
+                <button onclick="generateAISuggestions()">🤖 AI</button>
+            </div>
         </div>
-        <!-- 搜索/新增/导出 -->
-        <div class="controls">
-            <input type="text" class="search-box" id="searchBox" placeholder="搜尋支出項目..." autocomplete="off">
-            <button class="btn-add" onclick="openAddModal()">+ 新增</button>
-            <button class="btn-export" onclick="exportData()">📥 匯出</button>
+
+        <!-- 操作按鈕 -->
+        <div class="button-row">
+            <input type="text" id="searchBox" placeholder="搜尋支出項目..." autocomplete="off" style="flex: 1; min-width: 0;">
+            <button class="button-add" onclick="openAddModal()">+ 新增</button>
+            <button onclick="exportData()">📥 匯出</button>
         </div>
-        <!-- 支出表格 -->
-        <div class="table-section">
-            <table id="expenseTable">
-                <thead>
-                    <tr>
-                        <th>項目</th>
-                        <th>頻率</th>
-                        <th>單價</th>
-                        <th>次數</th>
-                        <th>年支出</th>
-                        <th>備註</th>
-                    </tr>
-                </thead>
-                <tbody id="tableBody">
-                    <tr><td colspan="6" style="text-align:center; padding:18px 6px; color:#666;">無符合的支出項目</td></tr>
-                </tbody>
-            </table>
+
+        <!-- 表格區域 -->
+        <div class="box">
+            <div class="table-wrapper">
+                <table id="expenseTable">
+                    <thead>
+                        <tr>
+                            <th>項目名稱</th>
+                            <th>頻率</th>
+                            <th>單價</th>
+                            <th>次數</th>
+                            <th>年支出</th>
+                            <th>備註</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <tr>
+                            <td colspan="6" class="empty-state">無符合的支出項目</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
-        <!-- 总支出汇总 -->
+
+        <!-- 總計區域 -->
         <div class="total-section">
             <div class="total-row">
                 <div class="total-label">💰 年度總支出</div>
-                <div class="total-value" id="displayTotal">0 元 / 年</div>
+                <div class="total-value" id="displayTotal">0 元</div>
+            </div>
+            <div class="total-row">
+                <div class="total-label">📊 平均月支出</div>
+                <div class="total-value" id="displayMonthly">0 元</div>
             </div>
         </div>
-        <!-- AI财务建议 -->
+
+        <!-- AI 建議面板 -->
         <div class="ai-panel">
             <div class="ai-header">🤖 AI 財務優化建議</div>
             <div class="ai-content" id="aiSuggestions">
-                請輸入每月收入並點擊「生成建議」，獲取具體可執行的個人化財務優化方案。
+                請輸入每月收入並點擊「AI」按鈕，獲取具體可執行的個人化財務優化方案。
             </div>
         </div>
     </div>
-    <!-- 新增/编辑弹窗 -->
+
+    <!-- 🔥 模態窗口 - 放在最後，z-index 最高 -->
     <div class="modal" id="itemModal">
+        <div class="modal-backdrop"></div>
         <div class="modal-content">
             <div class="modal-header" id="modalTitle">新增支出項目</div>
             <form id="itemForm" onsubmit="return false;">
                 <input type="hidden" id="itemId">
+                
                 <div class="form-group">
                     <label>項目名稱 *</label>
-                    <input type="text" id="itemName" required autocomplete="off">
+                    <input type="text" id="itemName" required autocomplete="off" placeholder="例如：水電費">
                 </div>
+
                 <div class="form-group">
                     <label>繳費頻率 *</label>
                     <select id="itemFrequency" required onchange="autoCalculateTimes()">
@@ -451,18 +614,22 @@
                         <option value="每年">每年</option>
                     </select>
                 </div>
+
                 <div class="form-group">
                     <label>單次金額 *</label>
                     <input type="number" id="itemAmount" required min="0" step="any" placeholder="0.00" autocomplete="off">
                 </div>
+
                 <div class="form-group">
                     <label>次數/年 *</label>
                     <input type="number" id="itemTimes" required min="1" placeholder="1" autocomplete="off">
                 </div>
+
                 <div class="form-group">
                     <label>備註</label>
                     <input type="text" id="itemRemark" placeholder="例如：4月/10月繳納" autocomplete="off">
                 </div>
+
                 <div class="form-actions" id="formActions">
                     <button type="button" class="btn-save" onclick="saveItem()">儲存</button>
                     <button type="button" class="btn-cancel" onclick="closeModal()">取消</button>
@@ -473,38 +640,47 @@
 
     <script>
         let expenseItems = [];
-        const freqMap = { "每月":12, "每2個月":6, "每3個月":4, "每半年":2, "每年":1 };
+        const freqMap = { "每月": 12, "每2個月": 6, "每3個月": 4, "每半年": 2, "每年": 1 };
 
-        // 页面加载完成后初始化
+        // 頁面加載完成
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('✅ DOMContentLoaded 觸發');
+            
+            // 加載數據
             loadData();
             renderTable();
             bindEvents();
-            // 解除iOS滚动/触摸阻塞
-            document.body.addEventListener('touchstart', function() {}, { passive: true });
+
+            // 禁用 iOS 雙擊放大
+            document.addEventListener('touchstart', function() {}, { passive: true });
+            document.addEventListener('touchend', function() {}, { passive: true });
+
+            console.log('✅ 初始化完成');
         });
 
-        // 加载本地存储数据
+        // 加載本地存儲數據
         function loadData() {
             const saved = localStorage.getItem('expenseItems');
             expenseItems = saved ? JSON.parse(saved) : [];
+            console.log('✅ 數據已加載:', expenseItems.length, '項');
         }
 
-        // 保存数据到本地
+        // 保存數據到本地
         function saveData() {
             localStorage.setItem('expenseItems', JSON.stringify(expenseItems));
+            console.log('✅ 數據已保存');
         }
 
         // 渲染支出表格
         function renderTable() {
             const tbody = document.getElementById('tableBody');
             const searchTerm = document.getElementById('searchBox').value.toLowerCase().trim();
-            const filteredItems = expenseItems.filter(item => 
+            const filteredItems = expenseItems.filter(item =>
                 item.name.toLowerCase().includes(searchTerm)
             );
 
             if (filteredItems.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:18px 6px; color:#666;">無符合的支出項目</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" class="empty-state">無符合的支出項目</td></tr>`;
                 updateTotals();
                 return;
             }
@@ -512,12 +688,12 @@
             tbody.innerHTML = filteredItems.map(item => {
                 const annual = item.amount * item.times;
                 return `
-                <tr>
-                    <td>${item.name}</td>
+                <tr onclick="openEditModal(${item.id})">
+                    <td class="col-name">${item.name}</td>
                     <td class="col-freq">${item.frequency}</td>
-                    <td class="clickable-amount" onclick="openEditModal(${item.id})">${item.amount.toLocaleString()}</td>
+                    <td class="col-amount">${item.amount.toLocaleString()}</td>
                     <td class="col-times">${item.times}</td>
-                    <td class="clickable-amount" onclick="openEditModal(${item.id})">${annual.toLocaleString()}</td>
+                    <td class="col-amount">${annual.toLocaleString()}</td>
                     <td class="col-remark">${item.remark || ''}</td>
                 </tr>`;
             }).join('');
@@ -525,7 +701,7 @@
             updateTotals();
         }
 
-        // 更新统计数据
+        // 更新統計數據
         function updateTotals() {
             const total = expenseItems.reduce((sum, item) => sum + (item.amount * item.times), 0);
             const count = expenseItems.length;
@@ -534,38 +710,50 @@
             document.getElementById('statCount').textContent = count;
             document.getElementById('statTotal').textContent = total.toLocaleString();
             document.getElementById('statMonthly').textContent = monthlyAvg.toLocaleString();
-            document.getElementById('displayTotal').textContent = `${total.toLocaleString()} 元 / 年`;
+            document.getElementById('displayTotal').textContent = `${total.toLocaleString()} 元`;
+            document.getElementById('displayMonthly').textContent = `${monthlyAvg.toLocaleString()} 元`;
         }
 
-        // 根据频率自动计算年次数
+        // 根據頻率自動計算年次數
         function autoCalculateTimes() {
             const freq = document.getElementById('itemFrequency').value;
             document.getElementById('itemTimes').value = freqMap[freq] || 1;
         }
 
-        // 打开新增项目弹窗
+        // 🔥 打開新增項目彈窗
         function openAddModal() {
+            console.log('打開新增 Modal');
+            
+            // 清除之前的數據
             document.getElementById('itemId').value = '';
             document.getElementById('modalTitle').textContent = '新增支出項目';
             document.getElementById('itemForm').reset();
+
+            // 移除刪除按鈕（如果存在）
             const deleteBtn = document.getElementById('deleteBtn');
             if (deleteBtn) deleteBtn.remove();
-            // 显示弹窗并强制聚焦输入框
+
+            // 禁用背景滾動
+            document.documentElement.style.overflow = 'hidden';
+
+            // 顯示彈窗
             document.getElementById('itemModal').classList.add('active');
+
+            // 激進的焦點設置
             setTimeout(() => {
                 const input = document.getElementById('itemName');
-                input.focus({ preventScroll: true });
-                // iOS强制唤出键盘
-                if (typeof input.setSelectionRange === 'function') {
-                    input.setSelectionRange(0, 0);
-                }
-            }, 100);
+                input.focus();
+                input.click();
+                console.log('✅ 焦點已設置到 itemName');
+            }, 50);
         }
 
-        // 打开编辑项目弹窗
+        // 打開編輯項目彈窗
         function openEditModal(id) {
             const item = expenseItems.find(i => i.id === id);
             if (!item) return;
+
+            console.log('打開編輯 Modal:', id);
 
             document.getElementById('itemId').value = item.id;
             document.getElementById('modalTitle').textContent = '編輯支出項目';
@@ -575,49 +763,60 @@
             document.getElementById('itemTimes').value = item.times;
             document.getElementById('itemRemark').value = item.remark || '';
 
-            // 添加删除按钮（编辑专属）
+            // 添加刪除按鈕
             let deleteBtn = document.getElementById('deleteBtn');
             if (!deleteBtn) {
                 deleteBtn = document.createElement('button');
                 deleteBtn.type = 'button';
                 deleteBtn.id = 'deleteBtn';
                 deleteBtn.className = 'btn-delete';
-                deleteBtn.textContent = '刪除';
-                deleteBtn.onclick = function() {
-                    if (confirm('⚠️ 確定要永久刪除此支出項目嗎？刪除後無法恢復！')) {
+                deleteBtn.textContent = '🗑️ 刪除此項目';
+                deleteBtn.onclick = function(e) {
+                    e.preventDefault();
+                    if (confirm('⚠️ 確定要永久刪除此支出項目嗎？')) {
                         deleteItem(id);
                     }
                 };
                 document.getElementById('formActions').appendChild(deleteBtn);
             }
 
-            // 显示弹窗并强制聚焦输入框
+            // 禁用背景滾動
+            document.documentElement.style.overflow = 'hidden';
+
+            // 顯示彈窗
             document.getElementById('itemModal').classList.add('active');
+
+            // 焦點設置
             setTimeout(() => {
                 const input = document.getElementById('itemName');
-                input.focus({ preventScroll: true });
-                if (typeof input.setSelectionRange === 'function') {
-                    input.setSelectionRange(input.value.length, input.value.length);
-                }
-            }, 100);
+                input.focus();
+                input.select();
+                console.log('✅ 焦點已設置到編輯 itemName');
+            }, 50);
         }
 
-        // 关闭弹窗
+        // 關閉彈窗
         function closeModal() {
+            console.log('關閉 Modal');
             document.getElementById('itemModal').classList.remove('active');
-            // 收起键盘
-            if (document.activeElement) document.activeElement.blur();
+            document.documentElement.style.overflow = 'auto';
+            
+            // 清除焦點
+            if (document.activeElement) {
+                document.activeElement.blur();
+            }
         }
 
-        // 删除项目
+        // 刪除項目
         function deleteItem(id) {
             expenseItems = expenseItems.filter(i => i.id !== id);
             saveData();
             closeModal();
             renderTable();
+            console.log('✅ 項目已刪除');
         }
 
-        // 保存新增/编辑项目
+        // 保存新增/編輯項目
         function saveItem() {
             const id = document.getElementById('itemId').value;
             const name = document.getElementById('itemName').value.trim();
@@ -626,9 +825,9 @@
             const times = parseInt(document.getElementById('itemTimes').value) || 1;
             const remark = document.getElementById('itemRemark').value.trim();
 
-            // 简单验证
-            if (!name || !frequency || amount < 0 || times < 1) {
-                alert('請填寫完整且有效的資訊！');
+            // 驗證
+            if (!name || !frequency || amount <= 0 || times < 1) {
+                alert('❌ 請填寫完整且有效的資訊！');
                 return;
             }
 
@@ -641,12 +840,17 @@
                 remark
             };
 
-            // 编辑/新增判断
             if (id) {
+                // 編輯
                 const index = expenseItems.findIndex(i => i.id === newItem.id);
-                expenseItems[index] = newItem;
+                if (index !== -1) {
+                    expenseItems[index] = newItem;
+                    console.log('✅ 項目已更新:', newItem.id);
+                }
             } else {
+                // 新增
                 expenseItems.push(newItem);
+                console.log('✅ 項目已新增:', newItem.id);
             }
 
             saveData();
@@ -654,7 +858,7 @@
             renderTable();
         }
 
-        // 生成AI财务建议
+        // 生成 AI 財務建議
         function generateAISuggestions() {
             const income = parseFloat(document.getElementById('monthlyIncome').value) || 0;
             if (income <= 0) {
@@ -666,96 +870,79 @@
             const totalMonthly = Math.round(totalAnnual / 12);
             const ratio = Math.round((totalMonthly / income) * 100);
             const monthlySurplus = income - totalMonthly;
-            const monthlyItems = expenseItems.filter(i => i.frequency === "每月");
-            const monthlyFixedTotal = monthlyItems.reduce((sum, i) => sum + i.amount, 0);
+
             const maxItem = expenseItems.reduce((max, item) => {
                 const annual = item.amount * item.times;
-                return annual > max.annual ? {name: item.name, annual: annual, monthly: Math.round(annual/12), freq: item.frequency} : max;
-            }, {name: '', annual: 0, monthly: 0, freq: ''});
+                return annual > (max.annual || 0) ? { name: item.name, annual: annual, monthly: Math.round(annual / 12) } : max;
+            }, {});
 
             let suggestions = `📊 核心財務數據\n`;
             suggestions += `• 月收入：${income.toLocaleString()} 元\n`;
-            suggestions += `• 月固定支出：${totalMonthly.toLocaleString()} 元\n`;
-            suggestions += `• 支出佔比：${ratio}% | 月盈餘：${monthlySurplus.toLocaleString()} 元\n\n`;
+            suggestions += `• 月支出：${totalMonthly.toLocaleString()} 元\n`;
+            suggestions += `• 支出佔比：${ratio}%\n`;
+            suggestions += `• 月盈餘：${monthlySurplus.toLocaleString()} 元\n\n`;
 
             if (ratio > 70) {
-                suggestions += `🔴 財務健康度：高風險\n`;
-                suggestions += `✅ 緊急優化：\n`;
-                suggestions += `1. 削減剛性支出（水電/管理費談價）\n`;
-                suggestions += `2. 存1-3個月緊急備金（約${(totalMonthly*3).toLocaleString()}元）\n`;
-                suggestions += `3. 開展副業補充收入\n\n`;
-            } else if (ratio > 40) {
-                suggestions += `🟡 財務健康度：中等\n`;
-                suggestions += `✅ 穩健優化：\n`;
-                suggestions += `1. 存6個月緊急備金（約${(totalMonthly*6).toLocaleString()}元）\n`;
-                suggestions += `2. 補充百萬醫療險，轉移風險\n`;
-                suggestions += `3. 盈餘按6:3:1分配（儲蓄:投資:消費）\n\n`;
+                suggestions += `🔴 財務狀況：高風險\n`;
+                suggestions += `✅ 建議行動：\n`;
+                suggestions += `1. 立即削減非必要支出\n`;
+                suggestions += `2. 建立1-3個月的應急基金\n`;
+                suggestions += `3. 尋求增加收入的途徑\n\n`;
+            } else if (ratio > 50) {
+                suggestions += `🟡 財務狀況：需要優化\n`;
+                suggestions += `✅ 建議行動：\n`;
+                suggestions += `1. 建立6個月的應急基金\n`;
+                suggestions += `2. 制定投資計劃\n`;
+                suggestions += `3. 盈餘按 50% 儲蓄、30% 投資、20% 消費分配\n\n`;
             } else {
-                suggestions += `🟢 財務健康度：優秀\n`;
-                suggestions += `✅ 資產增值：\n`;
-                suggestions += `1. 分散投資（指數基金/債券/黃金）\n`;
-                suggestions += `2. 開發被動收入（閒置資產出租等）\n`;
-                suggestions += `3. 規劃養老/長期理財\n\n`;
+                suggestions += `🟢 財務狀況：健康優秀\n`;
+                suggestions += `✅ 建議行動：\n`;
+                suggestions += `1. 持續維持現有支出結構\n`;
+                suggestions += `2. 積極進行資產配置投資\n`;
+                suggestions += `3. 規劃長期財務和養老計劃\n\n`;
             }
 
             if (maxItem.name) {
-                suggestions += `📈 最大支出優化（${maxItem.name}）\n`;
-                suggestions += `• 年支出：${maxItem.annual.toLocaleString()}元（月均${maxItem.monthly}元）\n`;
-                if (maxItem.name.includes("停車費")) {
-                    suggestions += `• 建議：換公共交通/申請公司停車補助\n`;
-                } else if (maxItem.name.includes("管理費") || maxItem.name.includes("水") || maxItem.name.includes("電")) {
-                    suggestions += `• 建議：與物業談價/更換節能設備\n`;
-                } else if (maxItem.name.includes("稅")) {
-                    suggestions += `• 建議：考慮新能源車減免稅費\n`;
-                } else {
-                    suggestions += `• 建議：重新評估必要性，更換高性價比方案\n`;
-                }
-                suggestions += `\n`;
+                suggestions += `📈 最大支出項目優化\n`;
+                suggestions += `• 項目：${maxItem.name}\n`;
+                suggestions += `• 年支出：${maxItem.annual.toLocaleString()} 元（月均 ${maxItem.monthly} 元）\n`;
+                suggestions += `• 建議：評估該項目的必要性，嘗試尋找更具性價比的替代方案\n`;
             }
-
-            suggestions += `💡 通用技巧：\n`;
-            suggestions += `1. 每日記帳，刪除無效消費\n`;
-            suggestions += `2. 開立4個帳戶（收入/支出/儲蓄/投資）\n`;
-            suggestions += `3. 設定自動轉帳，強制儲蓄投資\n`;
-            suggestions += `4. 每季度複盤，調整理財方案`;
 
             document.getElementById('aiSuggestions').textContent = suggestions;
         }
 
-        // 导出数据为TXT
+        // 匯出數據為 TXT
         function exportData() {
             if (expenseItems.length === 0) {
-                alert('目前無支出數據可匯出！');
+                alert('❌ 目前無支出數據可匯出！');
                 return;
             }
+
             const total = expenseItems.reduce((sum, item) => sum + (item.amount * item.times), 0);
             const monthlyAvg = Math.round(total / 12);
 
             let content = `年度固定支出總表\n`;
-            content += `====================\n\n`;
+            content += `=====================\n\n`;
             content += `📊 統計摘要\n`;
             content += `• 項目數量：${expenseItems.length} 項\n`;
             content += `• 年度總支出：${total.toLocaleString()} 元\n`;
             content += `• 平均月支出：${monthlyAvg.toLocaleString()} 元\n\n`;
             content += `📋 支出明細\n`;
-            content += `------------------------------------------------\n`;
-            content += `項目名稱    頻率    單價    次數    年支出    備註\n`;
-            content += `------------------------------------------------\n`;
+            content += `────────────────────────────────────────────\n`;
 
-            expenseItems.forEach(item => {
+            expenseItems.forEach((item, index) => {
                 const annual = item.amount * item.times;
-                const name = item.name.padEnd(8, ' ');
-                const freq = item.frequency.padEnd(6, ' ');
-                const amount = item.amount.toLocaleString().padStart(6, ' ');
-                const times = item.times.toString().padStart(6, ' ');
-                const annualStr = annual.toLocaleString().padStart(8, ' ');
-                const remark = (item.remark || '').padStart(6, ' ');
-                content += `${name} ${freq} ${amount} ${times} ${annualStr} ${remark}\n`;
+                content += `${index + 1}. ${item.name}\n`;
+                content += `   頻率：${item.frequency} | 單價：${item.amount.toLocaleString()} 元\n`;
+                content += `   次數：${item.times}/年 | 年支出：${annual.toLocaleString()} 元\n`;
+                if (item.remark) content += `   備註：${item.remark}\n`;
+                content += `\n`;
             });
 
-            content += `------------------------------------------------\n`;
-            content += `年度總支出：${total.toLocaleString()} 元\n`;
-            content += `平均月支出：${monthlyAvg.toLocaleString()} 元\n`;
+            content += `────────────────────────────────────────────\n`;
+            content += `💰 年度總支出：${total.toLocaleString()} 元\n`;
+            content += `📊 平均月支出：${monthlyAvg.toLocaleString()} 元\n`;
             content += `\n生成時間：${new Date().toLocaleString('zh-TW')}\n`;
 
             const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
@@ -767,32 +954,41 @@
             a.click();
             document.body.removeChild(a);
             window.URL.revokeObjectURL(url);
+
+            console.log('✅ 數據已匯出');
         }
 
-        // 绑定所有事件（避免事件冲突）
+        // 綁定事件
         function bindEvents() {
-            // 搜索框实时过滤
-            document.getElementById('searchBox').addEventListener('input', renderTable);
-            // 弹窗背景点击关闭（仅背景）
-            document.getElementById('itemModal').addEventListener('click', function(e) {
-                if (e.target === this) closeModal();
+            // 搜索框實時過濾
+            document.getElementById('searchBox').addEventListener('input', function() {
+                renderTable();
             });
-            // 阻止弹窗内容区事件冒泡
+
+            // Modal 背景點擊關閉
+            document.getElementById('itemModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeModal();
+                }
+            });
+
+            // 防止 Modal 內容點擊冒泡
             document.querySelector('.modal-content').addEventListener('click', function(e) {
                 e.stopPropagation();
             });
-            // 收入框/搜索框焦点优化
-            document.getElementById('monthlyIncome').addEventListener('focus', function() {
-                this.setSelectionRange(this.value.length, this.value.length);
-            });
-            document.getElementById('searchBox').addEventListener('focus', function() {
-                this.setSelectionRange(this.value.length, this.value.length);
-            });
-            // 阻止表单默认提交（避免页面刷新）
+
+            // 表單提交阻止
             document.getElementById('itemForm').addEventListener('submit', function(e) {
                 e.preventDefault();
             });
+
+            console.log('✅ 事件綁定完成');
         }
+
+        // 全局錯誤捕捉
+        window.addEventListener('error', function(e) {
+            console.error('❌ 全局錯誤:', e);
+        });
     </script>
 </body>
 </html>
