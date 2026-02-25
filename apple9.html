@@ -223,6 +223,10 @@
             flex: 0 0 auto;
             width: 60px;
             padding: 12px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         /* 按鈕區域 */
@@ -270,6 +274,11 @@
             background: #0A0A0A;
         }
 
+        /* 單價、年支出欄位標題右對齊，跟金額對齊 */
+        thead th.amount-col {
+            text-align: right;
+        }
+
         tbody td {
             padding: 12px 8px;
             color: #FFFFFF;
@@ -306,35 +315,9 @@
             font-size: 14px;
         }
 
-        /* 總計區域 */
+        /* 總計區域 - 已隱藏（不影響上方統計數字） */
         .total-section {
-            background: #1A1A1A;
-            border: 1px solid #333333;
-            border-radius: 6px;
-            padding: 16px;
-            margin-bottom: 16px;
-        }
-
-        .total-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-
-        .total-row:last-child {
-            margin-bottom: 0;
-        }
-
-        .total-label {
-            color: #AAAAAA;
-            font-size: 13px;
-        }
-
-        .total-value {
-            font-size: 16px;
-            font-weight: 700;
-            color: #38bdf8;
+            display: none;
         }
 
         /* AI 面板 */
@@ -435,6 +418,12 @@
             font-weight: 500;
         }
 
+        .field-hint {
+            margin-top: 4px;
+            font-size: 11px;
+            color: #777777;
+        }
+
         .form-group input,
         .form-group select {
             width: 100%;
@@ -466,13 +455,17 @@
 
         .form-actions button {
             flex: 1;
-            padding: 12px;
-            min-height: 44px;
+            padding: 8px;
+            height: 40px;
+            min-height: 40px;
             border: none;
             border-radius: 6px;
             cursor: pointer;
             font-weight: 600;
-            font-size: 14px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .btn-save {
@@ -497,7 +490,10 @@
         .btn-delete {
             background: #ef4444;
             color: #FFFFFF;
-            margin-top: 12px;
+            margin-top: 0;
+            padding: 8px;
+            height: 40px;
+            min-height: 40px;
         }
 
         .btn-delete:active {
@@ -554,9 +550,9 @@
                         <tr>
                             <th>項目名稱</th>
                             <th>頻率</th>
-                            <th>單價</th>
+                            <th class="amount-col">單價</th>
                             <th>次數</th>
-                            <th>年支出</th>
+                            <th class="amount-col">年支出</th>
                             <th>備註</th>
                         </tr>
                     </thead>
@@ -569,7 +565,7 @@
             </div>
         </div>
 
-        <!-- 總計區域 -->
+        <!-- 總計區域（畫面上隱藏） -->
         <div class="total-section">
             <div class="total-row">
                 <div class="total-label">💰 年度總支出</div>
@@ -600,7 +596,30 @@
                 
                 <div class="form-group">
                     <label>項目名稱 *</label>
-                    <input type="text" id="itemName" required autocomplete="off" placeholder="例如：水電費">
+                    <select id="itemNameSelect" required onchange="handleItemNameChange()">
+                        <option value="">請選擇</option>
+                        <!-- 12 個預設項目 -->
+                        <option value="健保">健保</option>
+                        <option value="水費">水費</option>
+                        <option value="電費">電費</option>
+                        <option value="管理費">管理費</option>
+                        <option value="停車費">停車費</option>
+                        <option value="電話費">電話費</option>
+                        <option value="車檢">車檢</option>
+                        <option value="牌照稅">牌照稅</option>
+                        <option value="燃料稅">燃料稅</option>
+                        <option value="房屋稅">房屋稅</option>
+                        <option value="地價稅">地價稅</option>
+                        <option value="強制險">強制險</option>
+                        <!-- 自訂 -->
+                        <option value="自訂">自訂</option>
+                    </select>
+                    <div class="field-hint">自訂：這個欄位，可以自己輸入項目名稱</div>
+                </div>
+
+                <div class="form-group" id="customNameGroup" style="display:none;">
+                    <label>自訂項目名稱</label>
+                    <input type="text" id="itemNameCustom" placeholder="請輸入項目名稱" autocomplete="off">
                 </div>
 
                 <div class="form-group">
@@ -633,6 +652,7 @@
                 <div class="form-actions" id="formActions">
                     <button type="button" class="btn-save" onclick="saveItem()">儲存</button>
                     <button type="button" class="btn-cancel" onclick="closeModal()">取消</button>
+                    <button type="button" class="btn-delete" id="deleteBtn" style="display:none;" onclick="deleteCurrentItem()">刪除</button>
                 </div>
             </form>
         </div>
@@ -640,35 +660,36 @@
 
     <script>
         let expenseItems = [];
+        // 頻率對應次數
         const freqMap = { "每月": 12, "每2個月": 6, "每3個月": 4, "每半年": 2, "每年": 1 };
+        // 12 個預設名稱
+        const presetNames = ["健保","水費","電費","瓦斯費","網路費","電話費","房租","管理費","保險費","房貸","車貸","訂閱服務"];
 
         // 頁面加載完成
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('✅ DOMContentLoaded 觸發');
-            
-            // 加載數據
             loadData();
             renderTable();
             bindEvents();
 
-            // 禁用 iOS 雙擊放大
             document.addEventListener('touchstart', function() {}, { passive: true });
             document.addEventListener('touchend', function() {}, { passive: true });
-
-            console.log('✅ 初始化完成');
         });
 
         // 加載本地存儲數據
         function loadData() {
             const saved = localStorage.getItem('expenseItems');
             expenseItems = saved ? JSON.parse(saved) : [];
-            console.log('✅ 數據已加載:', expenseItems.length, '項');
         }
 
         // 保存數據到本地
         function saveData() {
             localStorage.setItem('expenseItems', JSON.stringify(expenseItems));
-            console.log('✅ 數據已保存');
+        }
+
+        // 按頻率從多到少排序（每月最前面，每年最後）
+        function sortByFrequency(items) {
+            const freqOrder = { "每月": 1, "每2個月": 2, "每3個月": 3, "每半年": 4, "每年": 5 };
+            return [...items].sort((a, b) => (freqOrder[a.frequency] || 999) - (freqOrder[b.frequency] || 999));
         }
 
         // 渲染支出表格
@@ -685,7 +706,9 @@
                 return;
             }
 
-            tbody.innerHTML = filteredItems.map(item => {
+            const sortedItems = sortByFrequency(filteredItems);
+
+            tbody.innerHTML = sortedItems.map(item => {
                 const annual = item.amount * item.times;
                 return `
                 <tr onclick="openEditModal(${item.id})">
@@ -720,31 +743,52 @@
             document.getElementById('itemTimes').value = freqMap[freq] || 1;
         }
 
-        // 🔥 打開新增項目彈窗
+        // 處理項目名稱選擇
+        function handleItemNameChange() {
+            const select = document.getElementById('itemNameSelect');
+            const customGroup = document.getElementById('customNameGroup');
+            const customInput = document.getElementById('itemNameCustom');
+
+            if (select.value === '自訂') {
+                customGroup.style.display = 'block';
+                setTimeout(() => customInput.focus(), 50);
+            } else {
+                customGroup.style.display = 'none';
+                customInput.value = '';
+            }
+        }
+
+        // 取得實際項目名稱
+        function getItemName() {
+            const select = document.getElementById('itemNameSelect');
+            const customInput = document.getElementById('itemNameCustom');
+            if (select.value === '自訂') {
+                return customInput.value.trim();
+            }
+            return select.value.trim();
+        }
+
+        // 打開新增項目彈窗
         function openAddModal() {
-            console.log('打開新增 Modal');
-            
-            // 清除之前的數據
             document.getElementById('itemId').value = '';
             document.getElementById('modalTitle').textContent = '新增支出項目';
             document.getElementById('itemForm').reset();
 
-            // 移除刪除按鈕（如果存在）
+            const nameSelect = document.getElementById('itemNameSelect');
+            const customGroup = document.getElementById('customNameGroup');
+            const customInput = document.getElementById('itemNameCustom');
+            nameSelect.value = '';
+            customGroup.style.display = 'none';
+            customInput.value = '';
+
             const deleteBtn = document.getElementById('deleteBtn');
-            if (deleteBtn) deleteBtn.remove();
+            deleteBtn.style.display = 'none';
 
-            // 禁用背景滾動
             document.documentElement.style.overflow = 'hidden';
-
-            // 顯示彈窗
             document.getElementById('itemModal').classList.add('active');
 
-            // 激進的焦點設置
             setTimeout(() => {
-                const input = document.getElementById('itemName');
-                input.focus();
-                input.click();
-                console.log('✅ 焦點已設置到 itemName');
+                nameSelect.focus();
             }, 50);
         }
 
@@ -753,58 +797,60 @@
             const item = expenseItems.find(i => i.id === id);
             if (!item) return;
 
-            console.log('打開編輯 Modal:', id);
-
             document.getElementById('itemId').value = item.id;
             document.getElementById('modalTitle').textContent = '編輯支出項目';
-            document.getElementById('itemName').value = item.name;
+
+            const nameSelect = document.getElementById('itemNameSelect');
+            const customGroup = document.getElementById('customNameGroup');
+            const customInput = document.getElementById('itemNameCustom');
+
+            if (presetNames.includes(item.name)) {
+                nameSelect.value = item.name;
+                customGroup.style.display = 'none';
+                customInput.value = '';
+            } else {
+                nameSelect.value = '自訂';
+                customGroup.style.display = 'block';
+                customInput.value = item.name;
+            }
+
             document.getElementById('itemFrequency').value = item.frequency;
             document.getElementById('itemAmount').value = item.amount;
             document.getElementById('itemTimes').value = item.times;
             document.getElementById('itemRemark').value = item.remark || '';
 
-            // 添加刪除按鈕
-            let deleteBtn = document.getElementById('deleteBtn');
-            if (!deleteBtn) {
-                deleteBtn = document.createElement('button');
-                deleteBtn.type = 'button';
-                deleteBtn.id = 'deleteBtn';
-                deleteBtn.className = 'btn-delete';
-                deleteBtn.textContent = '🗑️ 刪除此項目';
-                deleteBtn.onclick = function(e) {
-                    e.preventDefault();
-                    if (confirm('⚠️ 確定要永久刪除此支出項目嗎？')) {
-                        deleteItem(id);
-                    }
-                };
-                document.getElementById('formActions').appendChild(deleteBtn);
-            }
+            const deleteBtn = document.getElementById('deleteBtn');
+            deleteBtn.style.display = 'flex';
+            deleteBtn.textContent = '刪除';
+            deleteBtn.currentId = id;
 
-            // 禁用背景滾動
             document.documentElement.style.overflow = 'hidden';
-
-            // 顯示彈窗
             document.getElementById('itemModal').classList.add('active');
 
-            // 焦點設置
             setTimeout(() => {
-                const input = document.getElementById('itemName');
-                input.focus();
-                input.select();
-                console.log('✅ 焦點已設置到編輯 itemName');
+                if (presetNames.includes(item.name)) {
+                    nameSelect.focus();
+                } else {
+                    customInput.focus();
+                    customInput.select();
+                }
             }, 50);
+        }
+
+        // 刪除當前編輯項目
+        function deleteCurrentItem() {
+            const deleteBtn = document.getElementById('deleteBtn');
+            const id = deleteBtn.currentId;
+            if (id && confirm('⚠️ 確定要永久刪除此支出項目嗎？')) {
+                deleteItem(id);
+            }
         }
 
         // 關閉彈窗
         function closeModal() {
-            console.log('關閉 Modal');
             document.getElementById('itemModal').classList.remove('active');
             document.documentElement.style.overflow = 'auto';
-            
-            // 清除焦點
-            if (document.activeElement) {
-                document.activeElement.blur();
-            }
+            if (document.activeElement) document.activeElement.blur();
         }
 
         // 刪除項目
@@ -813,19 +859,17 @@
             saveData();
             closeModal();
             renderTable();
-            console.log('✅ 項目已刪除');
         }
 
         // 保存新增/編輯項目
         function saveItem() {
             const id = document.getElementById('itemId').value;
-            const name = document.getElementById('itemName').value.trim();
+            const name = getItemName();
             const frequency = document.getElementById('itemFrequency').value;
             const amount = parseFloat(document.getElementById('itemAmount').value) || 0;
             const times = parseInt(document.getElementById('itemTimes').value) || 1;
             const remark = document.getElementById('itemRemark').value.trim();
 
-            // 驗證
             if (!name || !frequency || amount <= 0 || times < 1) {
                 alert('❌ 請填寫完整且有效的資訊！');
                 return;
@@ -841,16 +885,10 @@
             };
 
             if (id) {
-                // 編輯
                 const index = expenseItems.findIndex(i => i.id === newItem.id);
-                if (index !== -1) {
-                    expenseItems[index] = newItem;
-                    console.log('✅ 項目已更新:', newItem.id);
-                }
+                if (index !== -1) expenseItems[index] = newItem;
             } else {
-                // 新增
                 expenseItems.push(newItem);
-                console.log('✅ 項目已新增:', newItem.id);
             }
 
             saveData();
@@ -954,38 +992,25 @@
             a.click();
             document.body.removeChild(a);
             window.URL.revokeObjectURL(url);
-
-            console.log('✅ 數據已匯出');
         }
 
         // 綁定事件
         function bindEvents() {
-            // 搜索框實時過濾
-            document.getElementById('searchBox').addEventListener('input', function() {
-                renderTable();
-            });
+            document.getElementById('searchBox').addEventListener('input', renderTable);
 
-            // Modal 背景點擊關閉
             document.getElementById('itemModal').addEventListener('click', function(e) {
-                if (e.target === this) {
-                    closeModal();
-                }
+                if (e.target === this) closeModal();
             });
 
-            // 防止 Modal 內容點擊冒泡
             document.querySelector('.modal-content').addEventListener('click', function(e) {
                 e.stopPropagation();
             });
 
-            // 表單提交阻止
             document.getElementById('itemForm').addEventListener('submit', function(e) {
                 e.preventDefault();
             });
-
-            console.log('✅ 事件綁定完成');
         }
 
-        // 全局錯誤捕捉
         window.addEventListener('error', function(e) {
             console.error('❌ 全局錯誤:', e);
         });
